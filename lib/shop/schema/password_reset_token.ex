@@ -17,6 +17,6 @@ defmodule Shop.Schema.PasswordResetToken do
   def changeset(password_reset_token, attrs) do
     password_reset_token
     |> cast(attrs, [:email, :token, :expires_at, :used_at])
-    |> validate_required([:email, :token, :expires_at, :used_at])
+    |> validate_required([:email, :token])
   end
 end

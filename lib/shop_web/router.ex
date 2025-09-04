@@ -43,6 +43,7 @@ defmodule ShopWeb.Router do
     scope "/auth" do
       post "/register", Account.AccountController, :register
       post "/login", Account.AccountController, :login
+      post "/forgot", User.UserController, :forgot_password
     end
   end
 
