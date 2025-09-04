@@ -54,11 +54,13 @@ defmodule Shop.Schema.User do
   end
 
   defp put_default_tag(changeset) do
-    case get_field(changeset, :tag) do
+    case changeset |> get_field(:tag) do
       nil ->
-        name = get_field(changeset, :first_name) || "user"
+        name = changeset |> get_field(:first_name) || "user"
         random_numbers = Enum.random(100_000..999_999)
-        put_change(changeset, :tag, String.downcase(name) <> Integer.to_string(random_numbers))
+
+        changeset
+        |> put_change(:tag, String.downcase(name) <> Integer.to_string(random_numbers))
 
       _ ->
         changeset

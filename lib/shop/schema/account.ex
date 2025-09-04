@@ -35,14 +35,14 @@ defmodule Shop.Schema.Account do
   end
 
   defp put_default_tag(changeset) do
-    case get_field(changeset, :tag) do
+    case changeset |> get_field(:tag) do
       nil ->
-        name = get_field(changeset, :name) || "user"
+        name = changeset |> get_field(:name) || "user"
         first_word = name |> String.split(" ") |> List.first()
         random_numbers = Enum.random(100_000..999_999)
 
-        put_change(
-          changeset,
+        changeset
+        |> put_change(
           :tag,
           String.downcase(first_word) <> Integer.to_string(random_numbers)
         )
