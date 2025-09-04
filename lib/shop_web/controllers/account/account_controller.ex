@@ -11,14 +11,26 @@ defmodule ShopWeb.Account.AccountController do
   action_fallback ShopWeb.FallbackController
 
   def register(conn, params) do
-    account_params = params |> Map.take(["name", "email", "type", "plan", "settings", "metadata"])
-    user_params = params |> Map.take(["password", "first_name", "last_name", "phone"])
-    user_params = Map.put(user_params, "email", account_params["email"])
+    account_params =
+      params
+      |> Map.take(["name", "type", "plan", "settings", "metadata"])
+
+    user_params =
+      params
+      |> Map.take(["password", "email", "first_name", "last_name", "phone"])
 
     with {:ok, %Account{} = account} <- Accounts.create_account(account_params),
-         {:ok, %User{} = _user} <- Users.create_user(account, user_params) do
-      authorize_account(conn, account.email, user_params["password"])
+         {:ok, %User{} = user} <- Users.create_user(account, user_params) do
+      authorize_account(conn, user.email, user_params["password"])
     end
+  end
+
+  def login(conn, %{"email" => email, "password" => password}) do
+    authorize_account(conn, email, password)
+  end
+
+  def login(_conn, _params) do
+    {:error, :bad_request}
   end
 
   defp authorize_account(conn, email, password) do

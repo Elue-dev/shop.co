@@ -5,11 +5,11 @@ defmodule Shop.Schema.AccountUser do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "accounts_users" do
-    field :role, :string
+    field :roles, {:array, :string}, default: []
     field :status, Ecto.Enum, values: [:active, :inactive]
     field :metadata, :map
-    field :account_id, :binary_id
-    field :user_id, :binary_id
+    belongs_to :account, Shop.Schema.Account, type: :binary_id
+    belongs_to :user, Shop.Schema.User, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
@@ -17,7 +17,7 @@ defmodule Shop.Schema.AccountUser do
   @doc false
   def changeset(account_user, attrs) do
     account_user
-    |> cast(attrs, [:role, :status, :metadata])
-    |> validate_required([:role, :status])
+    |> cast(attrs, [:roles, :status, :metadata])
+    |> validate_required([:roles, :status])
   end
 end

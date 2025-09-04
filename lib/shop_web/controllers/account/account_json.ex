@@ -32,13 +32,10 @@ defmodule ShopWeb.Account.AccountJSON do
   end
 
   # Private helpers
-
   defp data(%Account{} = account) do
     %{
       id: account.id,
       name: account.name,
-      email: account.email,
-      tag: account.tag,
       type: account.type,
       status: account.status,
       plan: account.plan,
@@ -54,8 +51,6 @@ defmodule ShopWeb.Account.AccountJSON do
     %{
       id: account.id,
       name: account.name,
-      email: account.email,
-      tag: account.tag,
       type: account.type,
       status: account.status,
       plan: account.plan,
@@ -64,8 +59,7 @@ defmodule ShopWeb.Account.AccountJSON do
       deleted_at: account.deleted_at,
       inserted_at: account.inserted_at,
       updated_at: account.updated_at,
-      users: Enum.map(account.users || [], &user_data/1)
-      # users: Enum.map(account.users || [], fn user -> user_data(user) end)
+      user: account.user && user_data(account.user)
     }
   end
 

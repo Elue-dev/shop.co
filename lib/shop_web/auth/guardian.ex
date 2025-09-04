@@ -23,11 +23,10 @@ defmodule ShopWeb.Auth.Guardian do
         {:error, :invalid_credentials}
 
       user ->
-        user = Repo.preload(user, :accounts)
+        user = Repo.preload(user, :account)
 
         if validate_password(password, user.password) do
-          primary_account = List.first(user.accounts)
-          {:ok, primary_account, create_token(primary_account, :access)}
+          {:ok, user.account, create_token(user.account, :access)}
         else
           {:error, :invalid_credentials}
         end

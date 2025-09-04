@@ -17,7 +17,7 @@ defmodule Shop.Users do
   def create_user(account, attrs) do
     %User{}
     |> User.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:accounts, [account])
+    |> Ecto.Changeset.put_assoc(:account, account)
     |> Repo.insert()
   end
 

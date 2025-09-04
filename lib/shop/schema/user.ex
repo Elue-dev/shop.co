@@ -16,11 +16,7 @@ defmodule Shop.Schema.User do
     field :metadata, :map
     field :deleted_at, :utc_datetime_usec
 
-    has_many :account_users, Shop.Schema.AccountUser
-
-    many_to_many :accounts, Shop.Schema.Account,
-      join_through: Shop.Schema.AccountUser,
-      on_replace: :delete
+    belongs_to :account, Shop.Schema.Account, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
