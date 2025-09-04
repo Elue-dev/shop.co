@@ -1,4 +1,4 @@
-defmodule Shop.Accounts.OtpToken do
+defmodule Shop.Schema.OtpToken do
   use Ecto.Schema
   import Ecto.Changeset
 

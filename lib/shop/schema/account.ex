@@ -1,4 +1,4 @@
-defmodule Shop.Accounts.Account do
+defmodule Shop.Schema.Account do
   use Ecto.Schema
   import Ecto.Changeset
 

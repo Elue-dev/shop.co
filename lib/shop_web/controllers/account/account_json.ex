@@ -1,6 +1,6 @@
-defmodule ShopWeb.AccountJSON do
-  alias Shop.Accounts.Account
-  alias Shop.Accounts.User
+defmodule ShopWeb.Account.AccountJSON do
+  alias Shop.Schema.Account
+  alias Shop.Schema.User
 
   @doc "Renders a list of accounts"
   def index(%{accounts: accounts}) do

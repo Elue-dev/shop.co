@@ -6,7 +6,7 @@ defmodule Shop.Users do
   import Ecto.Query, warn: false
   alias Shop.Repo
 
-  alias Shop.Users.User
+  alias Shop.Schema.User
 
   def list_users do
     Repo.all(User)

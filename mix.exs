@@ -27,10 +27,8 @@ defmodule Shop.MixProject do
     ]
   end
 
-
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
-
 
   defp deps do
     [
@@ -45,6 +43,8 @@ defmodule Shop.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
+      {:guardian, "~> 2.4"},
+      {:bcrypt_elixir, "~> 3.3"},
       {:bandit, "~> 1.5"}
     ]
   end
