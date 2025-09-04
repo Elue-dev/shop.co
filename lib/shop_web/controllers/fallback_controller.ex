@@ -50,6 +50,18 @@ defmodule ShopWeb.FallbackController do
     |> json(%{error: "password required"})
   end
 
+  def call(conn, {:error, :invalid_or_expired}) do
+    conn
+    |> put_status(:forbidden)
+    |> json(%{error: "invalid or expired token"})
+  end
+
+  def call(conn, {:error, :password_mismatch}) do
+    conn
+    |> put_status(:forbidden)
+    |> json(%{error: "passwords must match"})
+  end
+
   def call(conn, {:error, _reason}) do
     conn
     |> put_status(:internal_server_error)
