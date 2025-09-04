@@ -15,11 +15,16 @@ defmodule Shop.Users do
   def get_user!(id), do: Repo.get!(User, id)
 
   def create_user(account, attrs) do
-    account
-    # this inserts the account id from the account object into the user object
-    |> Ecto.build_assoc(:user)
+    %User{}
     |> User.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:accounts, [account])
     |> Repo.insert()
+  end
+
+  def get_user_by_email(email) do
+    User
+    |> where(email: ^email)
+    |> Repo.one()
   end
 
   def update_user(%User{} = user, attrs) do

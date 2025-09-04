@@ -1,5 +1,6 @@
 defmodule ShopWeb.Router do
   use ShopWeb, :router
+  use Plug.ErrorHandler
 
   def handle_errors(conn, %{reason: %Phoenix.Router.NoRouteError{message: message}}) do
     conn
@@ -22,16 +23,26 @@ defmodule ShopWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
   end
 
-  scope "/api", ShopWeb do
+  pipeline :auth do
+    plug ShopWeb.Auth.Pipeline
+    plug ShopWeb.Auth.SetAccount
+  end
+
+  scope "/", ShopWeb do
     pipe_through :api
   end
 
-  scope "/api", ShopWeb do
+  scope "/", ShopWeb do
     pipe_through :api
 
     get "/health", HealthController, :health
+
+    scope "/auth" do
+      post "/register", Account.AccountController, :register
+    end
   end
 
   # Enable Swoosh mailbox preview in development

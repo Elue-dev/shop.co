@@ -6,14 +6,21 @@ defmodule Shop.Schema.User do
   @foreign_key_type :binary_id
   schema "users" do
     field :email, :string
-    field :password_hash, :string
+    field :password, :string
     field :phone, :string
+    field :tag, :string
     field :first_name, :string
     field :last_name, :string
     field :last_login_at, :utc_datetime_usec
     field :confirmed_at, :utc_datetime_usec
     field :metadata, :map
     field :deleted_at, :utc_datetime_usec
+
+    has_many :account_users, Shop.Schema.AccountUser
+
+    many_to_many :accounts, Shop.Schema.Account,
+      join_through: Shop.Schema.AccountUser,
+      on_replace: :delete
 
     timestamps(type: :utc_datetime)
   end
@@ -23,7 +30,7 @@ defmodule Shop.Schema.User do
     user
     |> cast(attrs, [
       :email,
-      :password_hash,
+      :password,
       :phone,
       :first_name,
       :last_name,
@@ -32,16 +39,36 @@ defmodule Shop.Schema.User do
       :metadata,
       :deleted_at
     ])
+    |> put_default_tag()
     |> validate_required([
       :email,
-      :password_hash,
+      :password,
       :phone,
       :first_name,
       :last_name,
-      :last_login_at,
-      :confirmed_at,
-      :deleted_at
+      :tag
     ])
     |> unique_constraint(:email)
+    |> put_password_hash()
+    |> put_change(:last_login_at, DateTime.utc_now())
+  end
+
+  defp put_default_tag(changeset) do
+    case get_field(changeset, :tag) do
+      nil ->
+        name = get_field(changeset, :first_name) || "user"
+        random_numbers = Enum.random(100_000..999_999)
+        put_change(changeset, :tag, String.downcase(name) <> Integer.to_string(random_numbers))
+
+      _ ->
+        changeset
+    end
+  end
+
+  defp put_password_hash(
+         %Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset
+       ) do
+    changeset
+    |> change(password: Bcrypt.hash_pwd_salt(password))
   end
 end

@@ -36,6 +36,10 @@ config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :shop, ShopWeb.Auth.Guardian,
+  issuer: "shop",
+  secret_key: "GSGSGGS0-fGsbvhFf84pfu9LztCZfD3XHefMsXaGkvNyib4jlGUlD"
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 

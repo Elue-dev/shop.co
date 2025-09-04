@@ -64,7 +64,8 @@ defmodule ShopWeb.Account.AccountJSON do
       deleted_at: account.deleted_at,
       inserted_at: account.inserted_at,
       updated_at: account.updated_at,
-      user: user_data(account.user)
+      users: Enum.map(account.users || [], &user_data/1)
+      # users: Enum.map(account.users || [], fn user -> user_data(user) end)
     }
   end
 
@@ -75,6 +76,7 @@ defmodule ShopWeb.Account.AccountJSON do
       first_name: user.first_name,
       last_name: user.last_name,
       phone: user.phone,
+      tag: user.tag,
       last_login_at: user.last_login_at,
       confirmed_at: user.confirmed_at,
       metadata: user.metadata,

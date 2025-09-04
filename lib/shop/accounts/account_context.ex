@@ -17,7 +17,7 @@ defmodule Shop.Accounts do
   def get_account_expanded!(id) do
     Account
     |> where(id: ^id)
-    |> preload([:user])
+    |> preload([:users])
     |> Repo.one()
   end
 

@@ -1,6 +1,5 @@
 defmodule ShopWeb.Auth.SetAccount do
   import Plug.Conn
-  alias ShopWeb.Auth.ErrorResponse
   alias Shop.Accounts
 
   def init(_opts) do
