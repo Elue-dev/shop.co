@@ -44,8 +44,8 @@ defmodule ShopWeb.Account.AccountController do
       {:ok, account, token} ->
         account_expanded = Accounts.get_account_expanded!(account.id)
 
-        if context == :register do
-          send_welcome_email_async(user, email)
+        if context == :register && user do
+          welcome_email_task(user, email)
         end
 
         conn
@@ -63,24 +63,20 @@ defmodule ShopWeb.Account.AccountController do
 
     cond do
       account.status == :active ->
-        json(conn, %{error: "account already active"})
+        {:error, :already_active}
 
       true ->
         case activate_account_action(account, token) do
           {:ok, _account} ->
-            json(conn, %{message: "account successfully activated"})
+            conn |> json(%{message: "account successfully activated"})
 
           {:error, :invalid_token} ->
-            conn
-            |> put_status(:unauthorized)
-            |> json(%{error: "invalid or expired token"})
+            {:error, :invalid_or_expired}
         end
     end
   rescue
     Ecto.NoResultsError ->
-      conn
-      |> put_status(:not_found)
-      |> json(%{error: "account not found"})
+      conn |> json(%{message: "account not found"})
   end
 
   def verify_and_activate_account(_, _) do
@@ -103,7 +99,7 @@ defmodule ShopWeb.Account.AccountController do
     end
   end
 
-  defp send_welcome_email_async(user, email) do
+  defp welcome_email_task(user, email) do
     Task.start(fn ->
       try do
         case create_verification_token(email) do
@@ -130,8 +126,6 @@ defmodule ShopWeb.Account.AccountController do
   end
 
   defp activate_account_action(account, token) do
-    IO.puts(inspect(account))
-
     case Repo.get_by(OtpToken, email: account.user.email, otp: token) do
       nil ->
         {:error, :invalid_token}

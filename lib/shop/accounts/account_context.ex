@@ -18,7 +18,7 @@ defmodule Shop.Accounts do
     Account
     |> where(id: ^id)
     |> preload([:user])
-    |> Repo.one()
+    |> Repo.one!()
   end
 
   def get_account_by_email(email) do
