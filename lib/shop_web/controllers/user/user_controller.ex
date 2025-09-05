@@ -4,6 +4,8 @@ defmodule ShopWeb.User.UserController do
   alias Shop.Repo
   alias Shop.Users
   alias Shop.Schema.PasswordResetToken
+  alias Shop.Mailer
+  alias Shop.Emails
 
   import Ecto.Query, warn: false
 
@@ -12,12 +14,16 @@ defmodule ShopWeb.User.UserController do
   def forgot_password(conn, %{"email" => email}) do
     case Users.get_user_by_email(email) do
       nil ->
-        json(conn, %{message: "If that email exists, a reset token has been sent"})
+        conn |> json(%{message: "If that email exists, a reset token has been sent"})
 
       user ->
-        {:ok, _reset_token} = create_password_reset_token(user.email)
+        {:ok, reset_token} = create_password_reset_token(user.email)
 
-        json(conn, %{message: "If that email exists, a reset token has been sent"})
+        user
+        |> Emails.password_reset_email(reset_token.token)
+        |> Mailer.deliver()
+
+        conn |> json(%{message: "If that email exists, a reset token has been sent"})
     end
   end
 
@@ -37,20 +43,16 @@ defmodule ShopWeb.User.UserController do
           {:error, :not_found}
 
         user ->
-          IO.puts(inspect(user))
-
           case get_by_token(token) do
             nil ->
               {:error, :invalid_or_expired}
 
             reset_token ->
-              IO.puts(inspect(reset_token))
-
               if reset_token.expires_at > DateTime.utc_now() do
                 {:ok, _} = user |> Users.update_user(%{password: password})
                 {:ok, _} = reset_token |> delete_token()
 
-                json(conn, %{message: "Password reset successful"})
+                conn |> json(%{message: "Password reset successful"})
               else
                 {:error, :invalid_or_expired}
               end

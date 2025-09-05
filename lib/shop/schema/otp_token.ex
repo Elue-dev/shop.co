@@ -17,6 +17,6 @@ defmodule Shop.Schema.OtpToken do
   def changeset(otp_token, attrs) do
     otp_token
     |> cast(attrs, [:email, :otp, :expires_at, :used_at])
-    |> validate_required([:email, :otp, :expires_at, :used_at])
+    |> validate_required([:email, :otp, :expires_at])
   end
 end
