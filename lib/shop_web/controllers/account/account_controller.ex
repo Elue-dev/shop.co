@@ -58,7 +58,27 @@ defmodule ShopWeb.Account.AccountController do
     end
   end
 
-  def create_verification_token(user_email) do
+  def verify_and_activate_account(conn, %{"id" => id, "token" => token}) do
+    case Accounts.get_account_expanded!(id) do
+      account ->
+        case activate_account_action(account, token) do
+          {:ok, _account} ->
+            json(conn, %{message: "Account successfully activated"})
+
+          {:error, :invalid_token} ->
+            {:error, :invalid_token}
+        end
+
+      {:error, _reason} ->
+        {:error, :not_found}
+    end
+  end
+
+  def verify_and_activate_account(_, _) do
+    {:error, :bad_request}
+  end
+
+  defp create_verification_token(user_email) do
     token = :rand.uniform(900_000) + 100_000
     expires_at = DateTime.add(DateTime.utc_now(), 15 * 60, :second)
 
@@ -98,6 +118,27 @@ defmodule ShopWeb.Account.AccountController do
           Logger.error("Exception while sending welcome email to #{email}: #{inspect(e)}")
       end
     end)
+  end
+
+  defp activate_account_action(account, token) do
+    case Repo.get_by(OtpToken, email: account.user.email, otp: token) do
+      nil ->
+        {:error, :invalid_token}
+
+      otp_record ->
+        case Accounts.update_account(account, %{
+               status: "active",
+               confirmed_at: DateTime.utc_now()
+             }) do
+          {:ok, account} ->
+            Repo.delete(otp_record)
+            Logger.info("Account #{account.name} activated")
+            {:ok, account}
+
+          error ->
+            error
+        end
+    end
   end
 
   def index(conn, _params) do
