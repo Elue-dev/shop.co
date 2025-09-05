@@ -59,19 +59,28 @@ defmodule ShopWeb.Account.AccountController do
   end
 
   def verify_and_activate_account(conn, %{"id" => id, "token" => token}) do
-    case Accounts.get_account_expanded!(id) do
-      account ->
+    account = Accounts.get_account_expanded!(id)
+
+    cond do
+      account.status == :active ->
+        json(conn, %{error: "account already active"})
+
+      true ->
         case activate_account_action(account, token) do
           {:ok, _account} ->
-            json(conn, %{message: "Account successfully activated"})
+            json(conn, %{message: "account successfully activated"})
 
           {:error, :invalid_token} ->
-            {:error, :invalid_token}
+            conn
+            |> put_status(:unauthorized)
+            |> json(%{error: "invalid or expired token"})
         end
-
-      {:error, _reason} ->
-        {:error, :not_found}
     end
+  rescue
+    Ecto.NoResultsError ->
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: "account not found"})
   end
 
   def verify_and_activate_account(_, _) do
@@ -121,18 +130,31 @@ defmodule ShopWeb.Account.AccountController do
   end
 
   defp activate_account_action(account, token) do
+    IO.puts(inspect(account))
+
     case Repo.get_by(OtpToken, email: account.user.email, otp: token) do
       nil ->
         {:error, :invalid_token}
 
       otp_record ->
         case Accounts.update_account(account, %{
-               status: "active",
-               confirmed_at: DateTime.utc_now()
+               status: "active"
              }) do
           {:ok, account} ->
             Repo.delete(otp_record)
-            Logger.info("Account #{account.name} activated")
+
+            case account.user do
+              %User{} = user ->
+                Users.update_user(user, %{confirmed_at: DateTime.utc_now()})
+
+              nil ->
+                Logger.warning(
+                  "No user associated with account #{account.id}, skipping user update"
+                )
+
+                :ok
+            end
+
             {:ok, account}
 
           error ->

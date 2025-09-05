@@ -62,6 +62,12 @@ defmodule ShopWeb.FallbackController do
     |> json(%{error: "passwords must match"})
   end
 
+  def call(conn, {:error, :already_active}) do
+    conn
+    |> put_status(:forbidden)
+    |> json(%{error: "account already active"})
+  end
+
   def call(conn, {:error, _reason}) do
     conn
     |> put_status(:internal_server_error)
