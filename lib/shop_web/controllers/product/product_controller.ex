@@ -71,7 +71,7 @@ defmodule ShopWeb.Product.ProductController do
     case params[key] do
       value when is_binary(value) ->
         {:ok, list} = Jason.decode(value)
-        Map.put(params, key, list)
+        params |> Map.put(key, list)
 
       _ ->
         params

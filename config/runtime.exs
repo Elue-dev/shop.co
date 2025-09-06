@@ -1,24 +1,21 @@
 import Config
 
-# config/runtime.exs is executed for all environments, including
-# during releases. It is executed after compilation and before the
-# system starts, so it is typically used to load production configuration
-# and secrets from environment variables or elsewhere. Do not define
-# any compile-time configuration in here, as it won't be applied.
-# The block below contains prod specific runtime configuration.
-
-# ## Using releases
-#
-# If you use `mix release`, you need to explicitly enable the server
-# by passing the PHX_SERVER=true when you start it:
-#
-#     PHX_SERVER=true bin/shop start
-#
-# Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
-# script that automatically sets the env var above.
 if System.get_env("PHX_SERVER") do
   config :shop, ShopWeb.Endpoint, server: true
 end
+
+guardian_secret_key = System.get_env("GUARDIAN_SECRET_KEY")
+
+if guardian_secret_key do
+  config :shop, ShopWeb.Auth.Guardian,
+    issuer: "shop",
+    secret_key: guardian_secret_key
+end
+
+config :shop, :cloudinary,
+  cloud_name: System.get_env("CLOUDINARY_CLOUD_NAME"),
+  api_key: System.get_env("CLOUDINARY_API_KEY"),
+  api_secret: System.get_env("CLOUDINARY_API_SECRET")
 
 if config_env() == :prod do
   database_url =
@@ -38,11 +35,6 @@ if config_env() == :prod do
     # pool_count: 4,
     socket_options: maybe_ipv6
 
-  # The secret key base is used to sign/encrypt cookies and other secrets.
-  # A default value is used in config/dev.exs and config/test.exs but you
-  # want to use a different value for prod and you most likely don't want
-  # to check this value into version control, so we use an environment
-  # variable instead.
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
       raise """
@@ -66,6 +58,13 @@ if config_env() == :prod do
       port: port
     ],
     secret_key_base: secret_key_base
+
+  unless guardian_secret_key do
+    raise """
+    environment variable GUARDIAN_SECRET_KEY is missing.
+    You can generate one by running: mix guardian.gen.secret
+    """
+  end
 
   # ## SSL Support
   #
