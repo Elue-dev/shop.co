@@ -12,7 +12,7 @@ defmodule ShopWeb.Product.ProductJSON do
       price: decimal_to_float(product.price),
       description: product.description,
       discount_price: decimal_to_float(product.discount_price),
-      image: product.image,
+      images: product.images,
       sizes: product.sizes,
       stock_quantity: product.stock_quantity,
       is_active: product.is_active,
@@ -26,8 +26,7 @@ defmodule ShopWeb.Product.ProductJSON do
   defp category_data(category) do
     %{
       id: category.id,
-      name: category.name,
-      description: category.description
+      name: category.name
     }
   end
 
@@ -36,8 +35,7 @@ defmodule ShopWeb.Product.ProductJSON do
   defp dress_style_data(dress_style) do
     %{
       id: dress_style.id,
-      name: dress_style.name,
-      description: dress_style.description
+      name: dress_style.name
     }
   end
 

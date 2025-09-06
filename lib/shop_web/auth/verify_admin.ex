@@ -12,7 +12,7 @@ defmodule ShopWeb.Auth.VerifyAdmin do
     else
       conn
       |> put_status(:forbidden)
-      |> json(%{error: "you must be an admin to add a product"})
+      |> json(%{error: "you must be an admin to perform this action"})
       |> halt()
     end
   end

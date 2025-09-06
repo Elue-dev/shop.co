@@ -8,6 +8,7 @@ defmodule Shop.Application do
       Shop.Repo,
       {DNSCluster, query: Application.get_env(:shop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Shop.PubSub},
+      {Finch, name: ShopFinch},
       ShopWeb.Endpoint
     ]
 

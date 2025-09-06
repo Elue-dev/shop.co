@@ -22,7 +22,7 @@ defmodule ShopWeb.Router do
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug :accepts, ["json", "multipart"]
     plug :fetch_session
   end
 

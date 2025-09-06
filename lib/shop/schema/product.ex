@@ -12,7 +12,7 @@ defmodule Shop.Schema.Product do
     field :price, :decimal
     field :description, :string
     field :discount_price, :decimal
-    field :image, :string
+    field :images, {:array, :string}, default: []
     field :sizes, {:array, Ecto.Enum}, values: @sizes
     field :stock_quantity, :integer
     field :is_active, :boolean, default: true
@@ -31,7 +31,7 @@ defmodule Shop.Schema.Product do
       :price,
       :description,
       :discount_price,
-      :image,
+      :images,
       :sizes,
       :stock_quantity,
       :is_active,
@@ -42,6 +42,7 @@ defmodule Shop.Schema.Product do
       :name,
       :price,
       :description,
+      :images,
       :sizes,
       :stock_quantity,
       :category_id,

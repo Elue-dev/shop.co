@@ -33,6 +33,11 @@ config :shop, ShopWeb.Auth.Guardian,
   issuer: "shop",
   secret_key: "GSGSGGS0-fGsbvhFf84pfu9LztCZfD3XHefMsXaGkvNyib4jlGUlD"
 
+config :shop, :cloudinary,
+  cloud_name: "dg0wlz4nh",
+  api_key: "124145474263782",
+  api_secret: "iE6m6q-V-jheTMUOQv20x4Q7BVA"
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
