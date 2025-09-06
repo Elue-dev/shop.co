@@ -1,9 +1,4 @@
 defmodule ShopWeb.FallbackController do
-  @moduledoc """
-  Translates controller action results into valid `Plug.Conn` responses.
-
-  See `Phoenix.Controller.action_fallback/1` for more details.
-  """
   use ShopWeb, :controller
 
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
@@ -40,31 +35,31 @@ defmodule ShopWeb.FallbackController do
 
   def call(conn, {:error, :invalid_password}) do
     conn
-    |> put_status(:forbidden)
+    |> put_status(:unauthorized)
     |> json(%{error: "invalid password"})
   end
 
   def call(conn, {:error, :missing_password}) do
     conn
-    |> put_status(:forbidden)
+    |> put_status(:bad_request)
     |> json(%{error: "password required"})
   end
 
   def call(conn, {:error, :invalid_or_expired}) do
     conn
-    |> put_status(:forbidden)
+    |> put_status(:unauthorized)
     |> json(%{error: "invalid or expired token"})
   end
 
   def call(conn, {:error, :password_mismatch}) do
     conn
-    |> put_status(:forbidden)
+    |> put_status(:bad_request)
     |> json(%{error: "passwords must match"})
   end
 
   def call(conn, {:error, :already_active}) do
     conn
-    |> put_status(:forbidden)
+    |> put_status(:bad_request)
     |> json(%{error: "account already active"})
   end
 
