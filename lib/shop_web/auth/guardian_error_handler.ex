@@ -1,4 +1,4 @@
-defmodule RealDealApiWeb.Auth.GuardianErrorHandler do
+defmodule ShopWeb.Auth.GuardianErrorHandler do
   import Plug.Conn
 
   def auth_error(conn, {type, _reason}, _opts) do

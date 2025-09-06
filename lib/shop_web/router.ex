@@ -31,6 +31,10 @@ defmodule ShopWeb.Router do
     plug ShopWeb.Auth.SetAccount
   end
 
+  pipeline :admin do
+    plug ShopWeb.Auth.VerifyAdmin
+  end
+
   scope "/", ShopWeb do
     pipe_through :api
   end
@@ -50,7 +54,24 @@ defmodule ShopWeb.Router do
     end
   end
 
-  # Enable Swoosh mailbox preview in development
+  scope "/", ShopWeb do
+    pipe_through [:api, :auth]
+
+    scope "/products" do
+      get "/", Product.ProductController, :index
+    end
+  end
+
+  scope "/", ShopWeb do
+    pipe_through [:api, :auth, :admin]
+
+    scope "/products" do
+      post "/", Product.ProductController, :create
+      post "/categories", Category.CategoryController, :create
+      post "/dress-style", DressStyle.DressStyleController, :create
+    end
+  end
+
   if Application.compile_env(:shop, :dev_routes) do
     scope "/dev" do
       pipe_through [:fetch_session, :protect_from_forgery]

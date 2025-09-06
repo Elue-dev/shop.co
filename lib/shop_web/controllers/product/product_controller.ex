@@ -11,8 +11,8 @@ defmodule ShopWeb.Product.ProductController do
     render(conn, :index, products: products)
   end
 
-  def create(conn, %{"product" => product_params}) do
-    with {:ok, %Product{} = product} <- Products.create_product(product_params) do
+  def create(conn, params) do
+    with {:ok, %Product{} = product} <- Products.create_product(params) do
       conn
       |> put_status(:created)
       |> render(:show, product: product)

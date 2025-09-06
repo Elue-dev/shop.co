@@ -19,6 +19,7 @@ defmodule Shop.Repo.Migrations.CreateProducts do
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:products, [:name])
     create index(:products, [:category_id])
     create index(:products, [:dress_style_id])
   end

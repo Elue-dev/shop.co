@@ -1,4 +1,4 @@
-defmodule ShopWeb.DressStyleController do
+defmodule ShopWeb.DressStyle.DressStyleController do
   use ShopWeb, :controller
 
   alias Shop.Schema.DressStyle
@@ -11,8 +11,8 @@ defmodule ShopWeb.DressStyleController do
     render(conn, :index, dress_styles: dress_styles)
   end
 
-  def create(conn, %{"dress_style" => dress_style_params}) do
-    with {:ok, %DressStyle{} = dress_style} <- DressStyles.create_dress_style(dress_style_params) do
+  def create(conn, params) do
+    with {:ok, %DressStyle{} = dress_style} <- DressStyles.create_dress_style(params) do
       conn
       |> put_status(:created)
       |> render(:show, dress_style: dress_style)

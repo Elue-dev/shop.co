@@ -1,4 +1,4 @@
-defmodule ShopWeb.DressStyleJSON do
+defmodule ShopWeb.DressStyle.DressStyleJSON do
   alias Shop.Schema.DressStyle
 
   def index(%{dress_styles: dress_styles}) do

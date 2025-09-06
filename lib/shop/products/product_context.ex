@@ -9,21 +9,28 @@ defmodule Shop.Products do
   alias Shop.Schema.Product
 
   def list_products do
-    Repo.all(Product)
+    Product
+    |> Repo.all()
+    |> Repo.preload([:category, :dress_style])
   end
 
-  def get_product!(id), do: Repo.get!(Product, id)
-
-  def get_product_expanded(id) do
-    Repo.get(Product, id)
-    |> Repo.preload(:dress_styles)
-    |> Repo.preload(:category)
+  def get_product!(id) do
+    Product
+    |> Repo.get!(id)
+    |> Repo.preload([:category, :dress_style])
   end
 
   def create_product(attrs) do
     %Product{}
     |> Product.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, product} ->
+        {:ok, Repo.preload(product, [:category, :dress_style])}
+
+      error ->
+        error
+    end
   end
 
   def update_product(%Product{} = product, attrs) do

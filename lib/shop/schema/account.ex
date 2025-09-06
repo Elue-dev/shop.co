@@ -11,6 +11,7 @@ defmodule Shop.Schema.Account do
     field :type, Ecto.Enum, values: [:buyer, :seller]
     field :status, Ecto.Enum, values: [:active, :inactive], default: :active
     field :plan, :string, default: "free"
+    field :role, Ecto.Enum, values: [:user, :admin], default: :user
     field :settings, :map, default: %{}
     field :metadata, :map
     field :deleted_at, :utc_datetime_usec
@@ -28,6 +29,7 @@ defmodule Shop.Schema.Account do
       :status,
       :type,
       :plan,
+      :role,
       :settings,
       :metadata,
       :deleted_at

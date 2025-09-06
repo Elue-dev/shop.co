@@ -16,6 +16,7 @@ defmodule Shop.Schema.Category do
   def changeset(category, attrs) do
     category
     |> cast(attrs, [:name, :description, :image])
-    |> validate_required([:name, :description, :image])
+    |> validate_required([:name])
+    |> unique_constraint(:name)
   end
 end

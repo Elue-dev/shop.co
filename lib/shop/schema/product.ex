@@ -34,7 +34,9 @@ defmodule Shop.Schema.Product do
       :image,
       :sizes,
       :stock_quantity,
-      :is_active
+      :is_active,
+      :category_id,
+      :dress_style_id
     ])
     |> validate_required([
       :name,
@@ -42,8 +44,10 @@ defmodule Shop.Schema.Product do
       :description,
       :sizes,
       :stock_quantity,
-      :is_active
+      :category_id,
+      :dress_style_id
     ])
+    |> unique_constraint(:name)
     |> assoc_constraint(:category)
     |> assoc_constraint(:dress_style)
   end
