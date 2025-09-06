@@ -14,6 +14,12 @@ defmodule Shop.Products do
 
   def get_product!(id), do: Repo.get!(Product, id)
 
+  def get_product_expanded(id) do
+    Repo.get(Product, id)
+    |> Repo.preload(:dress_styles)
+    |> Repo.preload(:category)
+  end
+
   def create_product(attrs) do
     %Product{}
     |> Product.changeset(attrs)

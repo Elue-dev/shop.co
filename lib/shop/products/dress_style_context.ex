@@ -1,4 +1,4 @@
-defmodule Shop.Product.DressStyles do
+defmodule Shop.Products.DressStyles do
   @moduledoc """
   The DressStyles context.
   """

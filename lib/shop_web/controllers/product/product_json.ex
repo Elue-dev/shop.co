@@ -13,7 +13,7 @@ defmodule ShopWeb.Product.ProductJSON do
       description: product.description,
       discount_price: product.discount_price,
       image: product.image,
-      size: product.size,
+      sizes: product.sizes,
       stock_quantity: product.stock_quantity,
       is_active: product.is_active
     }

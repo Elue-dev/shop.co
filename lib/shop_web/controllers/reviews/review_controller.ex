@@ -2,7 +2,7 @@ defmodule ShopWeb.ReviewController do
   use ShopWeb, :controller
 
   alias Shop.Schema.Review
-  alias Shop.Product.Reviews
+  alias Shop.Products.Reviews
 
   action_fallback ShopWeb.FallbackController
 

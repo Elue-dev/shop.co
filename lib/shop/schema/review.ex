@@ -8,9 +8,10 @@ defmodule Shop.Schema.Review do
     field :rating, :integer
     field :title, :string
     field :comment, :string
-    field :helpful_count, :integer
-    field :user_id, :binary_id
-    field :product_id, :binary_id
+    field :helpful_count, :integer, default: 0
+
+    belongs_to :user, Shop.Schema.User, type: :binary_id
+    belongs_to :product, Shop.Schema.Product, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
@@ -18,7 +19,8 @@ defmodule Shop.Schema.Review do
   @doc false
   def changeset(review, attrs) do
     review
-    |> cast(attrs, [:rating, :title, :comment, :helpful_count])
-    |> validate_required([:rating, :title, :comment, :helpful_count])
+    |> cast(attrs, [:rating, :title, :comment, :helpful_count, :user_id, :product_id])
+    |> validate_required([:rating, :title, :comment, :user_id, :product_id])
+    |> validate_inclusion(:rating, 1..5)
   end
 end

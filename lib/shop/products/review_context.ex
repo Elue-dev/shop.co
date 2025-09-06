@@ -1,4 +1,4 @@
-defmodule Shop.Product.Reviews do
+defmodule Shop.Products.Reviews do
   @moduledoc """
   The Reviews context.
   """

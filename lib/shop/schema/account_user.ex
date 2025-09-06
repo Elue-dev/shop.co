@@ -8,6 +8,7 @@ defmodule Shop.Schema.AccountUser do
     field :roles, {:array, :string}, default: []
     field :status, Ecto.Enum, values: [:active, :inactive]
     field :metadata, :map
+
     belongs_to :account, Shop.Schema.Account, type: :binary_id
     belongs_to :user, Shop.Schema.User, type: :binary_id
 

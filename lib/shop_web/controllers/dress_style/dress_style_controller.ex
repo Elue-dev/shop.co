@@ -2,7 +2,7 @@ defmodule ShopWeb.DressStyleController do
   use ShopWeb, :controller
 
   alias Shop.Schema.DressStyle
-  alias Shop.Poduct.DressStyles
+  alias Shop.Products.DressStyles
 
   action_fallback ShopWeb.FallbackController
 
