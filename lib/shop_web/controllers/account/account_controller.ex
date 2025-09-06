@@ -58,10 +58,31 @@ defmodule ShopWeb.Account.AccountController do
     end
   end
 
+  def send_verification_email(conn, %{"id" => id}) do
+    case Accounts.get_account_expanded!(id) do
+      %Account{status: :active} ->
+        {:error, :already_active}
+
+      account ->
+        verification_email_task(account.user, account.user.email)
+        conn |> json(%{message: "verification email sent"})
+    end
+  rescue
+    Ecto.NoResultsError ->
+      {:error, :account_not_found}
+  end
+
+  def send_verification_email(_conn, _params) do
+    {:error, :bad_request}
+  end
+
   def verify_and_activate_account(conn, %{"id" => id, "token" => token}) do
     account = Accounts.get_account_expanded!(id)
 
     cond do
+      account == nil ->
+        {:error, :account_not_found}
+
       account.status == :active ->
         {:error, :already_active}
 
@@ -106,6 +127,32 @@ defmodule ShopWeb.Account.AccountController do
           {:ok, token} ->
             user
             |> Emails.welcome_email(token)
+            |> Mailer.deliver()
+            |> case do
+              {:ok, _} ->
+                Logger.info("Welcome email sent successfully to #{email}")
+
+              {:error, reason} ->
+                Logger.error("Failed to send welcome email to #{email}: #{inspect(reason)}")
+            end
+
+          {:error, reason} ->
+            Logger.error("Failed to create verification token for #{email}: #{inspect(reason)}")
+        end
+      rescue
+        e ->
+          Logger.error("Exception while sending welcome email to #{email}: #{inspect(e)}")
+      end
+    end)
+  end
+
+  defp verification_email_task(user, email) do
+    Task.start(fn ->
+      try do
+        case create_verification_token(email) do
+          {:ok, token} ->
+            user
+            |> Emails.verification_email(token)
             |> Mailer.deliver()
             |> case do
               {:ok, _} ->
