@@ -3,14 +3,22 @@ defmodule Shop.Helpers.ProductFilters do
     filters = %{}
 
     filters =
-      if params["category"], do: Map.put(filters, :category, params["category"]), else: filters
+      case params["category"] do
+        nil -> filters
+        category -> filters |> Map.put(:category, category)
+      end
 
     filters =
-      if params["dress_style"],
-        do: Map.put(filters, :dress_style, params["dress_style"]),
-        else: filters
+      case params["dress_style"] do
+        nil -> filters
+        dress_style -> filters |> Map.put(:dress_style, params["dress_style"])
+      end
 
-    filters = if params["size"], do: Map.put(filters, :size, params["size"]), else: filters
+    filters =
+      case params["size"] do
+        nil -> filters
+        size -> filters |> Map.put(:size, params["size"])
+      end
 
     filters =
       case params["price_range"] do
@@ -29,7 +37,11 @@ defmodule Shop.Helpers.ProductFilters do
           end
       end
 
-    filters = if params["search"], do: Map.put(filters, :search, params["search"]), else: filters
+    filters =
+      case params["search"] do
+        nil -> filters
+        search -> filters |> Map.put(:search, params["search"])
+      end
 
     is_active =
       case params["is_active"] do
@@ -37,11 +49,13 @@ defmodule Shop.Helpers.ProductFilters do
         _ -> true
       end
 
-    filters = Map.put(filters, :is_active, is_active)
+    filters = filters |> Map.put(:is_active, is_active)
 
-    filters = if params["sort"], do: Map.put(filters, :sort, params["sort"]), else: filters
-
-    filters
+    filters =
+      case params["sort"] do
+        nil -> filters
+        sort -> filters |> Map.put(:sort, params["sort"])
+      end
   end
 
   def parse_price_range(price_range) when is_binary(price_range) do

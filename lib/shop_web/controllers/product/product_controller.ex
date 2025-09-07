@@ -10,7 +10,6 @@ defmodule ShopWeb.Product.ProductController do
 
   def list_products(conn, params) do
     filters = ProductFilters.parse_filters(params)
-    IO.puts("Filters: #{inspect(filters)}")
     products = Products.list_products(filters)
     render(conn, :index, products: products)
   end
