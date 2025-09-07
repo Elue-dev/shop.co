@@ -3,7 +3,7 @@ defmodule ShopWeb.Product.ProductController do
 
   alias Shop.Schema.Product
   alias Shop.Products
-  alias Shop.Helpers.Cloudinary
+  alias Shop.Helpers.ImageUploader
   alias Shop.Helpers.ProductFilters
 
   action_fallback ShopWeb.FallbackController
@@ -27,7 +27,7 @@ defmodule ShopWeb.Product.ProductController do
     image_urls =
       image_list
       |> Enum.map(fn %Plug.Upload{path: path} ->
-        case Cloudinary.upload(path) do
+        case ImageUploader.upload(path) do
           {:ok, url} -> url
           {:error, _} -> nil
         end

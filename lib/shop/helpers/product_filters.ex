@@ -11,13 +11,13 @@ defmodule Shop.Helpers.ProductFilters do
     filters =
       case params["dress_style"] do
         nil -> filters
-        dress_style -> filters |> Map.put(:dress_style, params["dress_style"])
+        dress_style -> filters |> Map.put(:dress_style, dress_style)
       end
 
     filters =
       case params["size"] do
         nil -> filters
-        size -> filters |> Map.put(:size, params["size"])
+        size -> filters |> Map.put(:size, size)
       end
 
     filters =
@@ -40,7 +40,7 @@ defmodule Shop.Helpers.ProductFilters do
     filters =
       case params["search"] do
         nil -> filters
-        search -> filters |> Map.put(:search, params["search"])
+        search -> filters |> Map.put(:search, search)
       end
 
     is_active =
@@ -54,8 +54,10 @@ defmodule Shop.Helpers.ProductFilters do
     filters =
       case params["sort"] do
         nil -> filters
-        sort -> filters |> Map.put(:sort, params["sort"])
+        sort -> filters |> Map.put(:sort, sort)
       end
+
+    filters
   end
 
   def parse_price_range(price_range) when is_binary(price_range) do
