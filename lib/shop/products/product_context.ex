@@ -6,11 +6,11 @@ defmodule Shop.Products do
   alias Shop.Repo
   alias Shop.Schema.Product
 
-  alias Shop.Helpers.ProductContextQueryBuilder
+  alias Shop.Helpers.ProductQueryBuilder
 
   def list_products(filters \\ %{}) do
     Product
-    |> ProductContextQueryBuilder.build_query(filters)
+    |> ProductQueryBuilder.build_query(filters)
     |> Repo.all()
     |> Repo.preload([:category, :dress_style])
   end
