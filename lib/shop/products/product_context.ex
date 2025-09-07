@@ -5,11 +5,12 @@ defmodule Shop.Products do
   import Ecto.Query, warn: false
   alias Shop.Repo
   alias Shop.Schema.Product
+
   alias Shop.Helpers.ProductContextQueryBuilder
 
   def list_products(filters \\ %{}) do
     Product
-    |> ContextQueryBuilder.build_query(filters)
+    |> ProductContextQueryBuilder.build_query(filters)
     |> Repo.all()
     |> Repo.preload([:category, :dress_style])
   end
