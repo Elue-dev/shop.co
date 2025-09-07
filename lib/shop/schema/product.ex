@@ -48,7 +48,7 @@ defmodule Shop.Schema.Product do
       :category_id,
       :dress_style_id
     ])
-    |> validate_length(:images, min: 1, message: "must have at least one image")
+    # |> validate_length(:images, min: 1, message: "must have at least one image")
     |> unique_constraint(:name)
     |> assoc_constraint(:category)
     |> assoc_constraint(:dress_style)

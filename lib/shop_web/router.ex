@@ -55,10 +55,10 @@ defmodule ShopWeb.Router do
   end
 
   scope "/", ShopWeb do
-    pipe_through [:api, :auth]
+    pipe_through [:api]
 
     scope "/products" do
-      get "/", Product.ProductController, :index
+      get "/", Product.ProductController, :list_products
     end
   end
 
@@ -66,9 +66,9 @@ defmodule ShopWeb.Router do
     pipe_through [:api, :auth, :admin]
 
     scope "/products" do
-      post "/", Product.ProductController, :create
-      post "/categories", Category.CategoryController, :create
-      post "/dress-style", DressStyle.DressStyleController, :create
+      post "/", Product.ProductController, :add_product
+      post "/categories", Category.CategoryController, :add_category
+      post "/dress-style", DressStyle.DressStyleController, :add_review
     end
   end
 

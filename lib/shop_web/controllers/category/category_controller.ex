@@ -11,7 +11,7 @@ defmodule ShopWeb.Category.CategoryController do
     render(conn, :index, categories: categories)
   end
 
-  def create(conn, params) do
+  def add_category(conn, params) do
     with {:ok, %Category{} = category} <- Categories.create_category(params) do
       conn
       |> put_status(:created)

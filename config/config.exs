@@ -29,15 +29,10 @@ config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Placeholder configurations (will be set properly in runtime.exs)
-config :shop, ShopWeb.Auth.Guardian,
-  issuer: "shop",
-  secret_key: "compile-time-placeholder"
-
 config :shop, :cloudinary,
-  cloud_name: nil,
-  api_key: nil,
-  api_secret: nil
+  cloud_name: "compile-time-placeholder",
+  api_key: "compile-time-placeholder",
+  api_secret: "compile-time-placeholder"
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

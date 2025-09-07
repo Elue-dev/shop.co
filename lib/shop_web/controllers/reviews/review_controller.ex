@@ -11,7 +11,7 @@ defmodule ShopWeb.ReviewController do
     render(conn, :index, reviews: reviews)
   end
 
-  def create(conn, %{"review" => review_params}) do
+  def add_review(conn, %{"review" => review_params}) do
     with {:ok, %Review{} = review} <- Reviews.create_review(review_params) do
       conn
       |> put_status(:created)

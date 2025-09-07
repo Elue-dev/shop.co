@@ -1,5 +1,21 @@
 import Config
 
+if File.exists?(".env") do
+  File.read!(".env")
+  |> String.split("\n", trim: true)
+  |> Enum.reject(&String.starts_with?(&1, "#"))
+  |> Enum.each(fn line ->
+    case String.split(line, "=", parts: 2) do
+      [key, value] ->
+        clean_value = String.trim(value) |> String.trim("\"") |> String.trim("'")
+        System.put_env(String.trim(key), clean_value)
+
+      _ ->
+        :ok
+    end
+  end)
+end
+
 config :shop, Shop.Repo,
   url: System.get_env("DATABASE_URL"),
   stacktrace: true,

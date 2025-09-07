@@ -4,15 +4,17 @@ defmodule ShopWeb.Product.ProductController do
   alias Shop.Schema.Product
   alias Shop.Products
   alias Shop.Helpers.Cloudinary
+  alias Shop.Helpers.ProductFilters
 
   action_fallback ShopWeb.FallbackController
 
-  def index(conn, _params) do
-    products = Products.list_products()
+  def list_products(conn, params) do
+    filters = ProductFilters.parse_filters(params)
+    products = Products.list_products(filters)
     render(conn, :index, products: products)
   end
 
-  def create(conn, %{"images" => images} = params) do
+  def add_product(conn, %{"images" => images} = params) do
     params = handle_form_array(params, "sizes")
 
     image_list =

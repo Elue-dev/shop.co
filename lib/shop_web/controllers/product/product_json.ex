@@ -1,6 +1,10 @@
 defmodule ShopWeb.Product.ProductJSON do
   alias Shop.Schema.Product
 
+  def index(%{products: products}) do
+    %{data: for(product <- products, do: data(product))}
+  end
+
   def show(%{product: product}) do
     %{data: data(product)}
   end
