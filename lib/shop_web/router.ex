@@ -61,7 +61,7 @@ defmodule ShopWeb.Router do
   end
 
   scope "/", ShopWeb do
-    pipe_through [:api]
+    pipe_through :api
 
     scope "/products" do
       get "/", Product.ProductController, :list_products

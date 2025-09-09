@@ -45,7 +45,7 @@ defmodule Shop.Schema.User do
       :tag
     ])
     |> unique_constraint(:email)
-    |> put_password_hash()
+    |> maybe_put_password_hash()
     |> put_change(:last_login_at, DateTime.utc_now())
   end
 
@@ -63,10 +63,12 @@ defmodule Shop.Schema.User do
     end
   end
 
-  defp put_password_hash(
-         %Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset
-       ) do
-    changeset
-    |> change(password: Bcrypt.hash_pwd_salt(password))
+  defp maybe_put_password_hash(%Ecto.Changeset{valid?: true} = changeset) do
+    case get_change(changeset, :password) do
+      nil -> changeset
+      password -> change(changeset, password: Bcrypt.hash_pwd_salt(password))
+    end
   end
+
+  defp maybe_put_password_hash(changeset), do: changeset
 end
