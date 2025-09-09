@@ -104,7 +104,8 @@ defmodule ShopWeb.Router do
     pipe_through [:api, :auth, :uuid_check]
 
     scope "/products" do
-      post "/:id/review", Review.ReviewController, :add_review
+      post "/:id/review", Review.ReviewController, :add_product_review
+      get "/:id/reviews", Review.ReviewController, :list_product_reviews
     end
   end
 

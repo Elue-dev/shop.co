@@ -48,7 +48,7 @@ defmodule ShopWeb.User.UserController do
               {:error, :invalid_or_expired}
 
             reset_token ->
-              if reset_token.expires_at > DateTime.utc_now() do
+              if DateTime.compare(reset_token.expires_at, DateTime.utc_now()) == :gt do
                 {:ok, _} = user |> Users.update_user(%{password: password})
                 {:ok, _} = reset_token |> delete_token()
 

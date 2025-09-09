@@ -7,7 +7,7 @@ defmodule ShopWeb.Review.ReviewController do
 
   action_fallback ShopWeb.FallbackController
 
-  def add_review(conn, %{"id" => id} = params) when map_size(params) > 1 do
+  def add_product_review(conn, %{"id" => id} = params) when map_size(params) > 1 do
     user_id = conn.assigns.account.user.id
 
     case Products.get_product(id) do
@@ -32,10 +32,12 @@ defmodule ShopWeb.Review.ReviewController do
     {:error, :bad_request}
   end
 
-  def show(conn, %{"id" => id}) do
-    case Reviews.get_review(id) do
+  def list_product_reviews(conn, %{"id" => id}) do
+    with product when not is_nil(product) <- Products.get_product(id) do
+      reviews = Reviews.list_product_reviews(product.id)
+      render(conn, :index, reviews: reviews)
+    else
       nil -> {:error, :item_not_found}
-      review -> render(conn, :show, review: review)
     end
   end
 end
