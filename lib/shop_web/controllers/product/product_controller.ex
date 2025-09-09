@@ -54,19 +54,21 @@ defmodule ShopWeb.Product.ProductController do
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do
-    product = Products.get_product!(id)
+    case Products.get_product(id) do
+      nil ->
+        {:error, :item_not_found}
 
-    with {:ok, %Product{} = product} <- Products.update_product(product, product_params) do
-      render(conn, :show, product: product)
+      product ->
+        with {:ok, %Product{} = product} <- Products.update_product(product, product_params) do
+          render(conn, :show, product: product)
+        end
     end
   end
 
   def delete_product(conn, %{"id" => id}) do
     case Products.get_product(id) do
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "product not found"})
+        {:error, :item_not_found}
 
       product ->
         with {:ok, %Product{}} <- Products.delete_product(product) do
