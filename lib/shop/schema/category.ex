@@ -29,7 +29,7 @@ defmodule Shop.Schema.Category do
       changeset
     else
       changeset
-      |> add_error(:detail, "unrecognized parameter(s): #{Enum.join(unexpected, ", ")}")
+      |> add_error(:detail, "unrecognized field(s): #{Enum.join(unexpected, ", ")}")
     end
   end
 end

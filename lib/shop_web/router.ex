@@ -64,6 +64,7 @@ defmodule ShopWeb.Router do
     scope "/products" do
       get "/", Product.ProductController, :list_products
       get "/categories", Category.CategoryController, :list_categories
+      get "/dress-styles", DressStyle.DressStyleController, :list_styles
     end
   end
 
@@ -81,6 +82,7 @@ defmodule ShopWeb.Router do
 
     scope "/products" do
       patch "/categories/:id", Category.CategoryController, :update
+      patch "/dress-style/:id", DressStyle.DressStyleController, :update
     end
   end
 

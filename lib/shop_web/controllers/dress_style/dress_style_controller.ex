@@ -6,7 +6,7 @@ defmodule ShopWeb.DressStyle.DressStyleController do
 
   action_fallback ShopWeb.FallbackController
 
-  def list_dress_styles(conn, _params) do
+  def list_styles(conn, _params) do
     dress_styles = DressStyles.list_dress_styles()
     render(conn, :index, dress_styles: dress_styles)
   end
@@ -19,18 +19,18 @@ defmodule ShopWeb.DressStyle.DressStyleController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    dress_style = DressStyles.get_dress_style!(id)
-    render(conn, :show, dress_style: dress_style)
-  end
-
-  def update(conn, %{"id" => id, "dress_style" => dress_style_params}) do
+  def update(conn, %{"id" => id} = params) when map_size(params) > 1 do
+    dress_style_params = params |> Map.delete("id")
     dress_style = DressStyles.get_dress_style!(id)
 
     with {:ok, %DressStyle{} = dress_style} <-
            DressStyles.update_dress_style(dress_style, dress_style_params) do
       render(conn, :show, dress_style: dress_style)
     end
+  end
+
+  def update(_conn, _params) do
+    {:error, :bad_request}
   end
 
   def delete(conn, %{"id" => id}) do

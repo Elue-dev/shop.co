@@ -14,9 +14,21 @@ defmodule Shop.Schema.DressStyle do
 
   @doc false
   def changeset(dress_style, attrs) do
-    dress_style
-    |> cast(attrs, [:name, :cover_photo, :description])
-    |> validate_required([:name])
-    |> unique_constraint(:name)
+    allowed_fields = [:name, :cover_photo, :description]
+    provided_fields = Map.keys(attrs) |> Enum.map(&String.to_atom/1)
+    unexpected = provided_fields -- allowed_fields
+
+    changeset =
+      dress_style
+      |> cast(attrs, allowed_fields)
+      |> validate_required([:name])
+      |> unique_constraint(:name)
+
+    if unexpected == [] do
+      changeset
+    else
+      changeset
+      |> add_error(:detail, "unexpected field(s): #{Enum.join(unexpected, ", ")}")
+    end
   end
 end
