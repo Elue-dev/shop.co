@@ -100,6 +100,14 @@ defmodule ShopWeb.Router do
     end
   end
 
+  scope "/", ShopWeb do
+    pipe_through [:api, :auth, :uuid_check]
+
+    scope "/products" do
+      post "/:id/review", Review.ReviewController, :add_review
+    end
+  end
+
   if Application.compile_env(:shop, :dev_routes) do
     scope "/dev" do
       pipe_through [:fetch_session, :protect_from_forgery]

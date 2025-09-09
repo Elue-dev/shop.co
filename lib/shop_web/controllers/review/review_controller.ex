@@ -1,21 +1,30 @@
-defmodule ShopWeb.ReviewController do
+defmodule ShopWeb.Review.ReviewController do
   use ShopWeb, :controller
 
   alias Shop.Schema.Review
   alias Shop.Products.Reviews
+  alias Shop.Products
 
   action_fallback ShopWeb.FallbackController
 
-  def index(conn, _params) do
-    reviews = Reviews.list_reviews()
-    render(conn, :index, reviews: reviews)
-  end
+  def add_review(conn, %{"id" => id} = params) do
+    user_id = conn.assigns.account.user.id
 
-  def add_review(conn, %{"review" => review_params}) do
-    with {:ok, %Review{} = review} <- Reviews.create_review(review_params) do
-      conn
-      |> put_status(:created)
-      |> render(:show, review: review)
+    case Products.get_product(id) do
+      nil ->
+        {:error, :item_not_found}
+
+      product ->
+        params =
+          params
+          |> Map.put("product_id", product.id)
+          |> Map.put("user_id", user_id)
+
+        with {:ok, %Review{} = review} <- Reviews.create_review(params) do
+          conn
+          |> put_status(:created)
+          |> render(:show, review: review)
+        end
     end
   end
 

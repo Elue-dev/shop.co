@@ -1,4 +1,4 @@
-defmodule ShopWeb.ReviewJSON do
+defmodule ShopWeb.Review.ReviewJSON do
   alias Shop.Schema.Review
 
   def index(%{reviews: reviews}) do
@@ -15,7 +15,15 @@ defmodule ShopWeb.ReviewJSON do
       rating: review.rating,
       title: review.title,
       comment: review.comment,
-      helpful_count: review.helpful_count
+      helpful_count: review.helpful_count,
+      user: get_user(review.user)
+    }
+  end
+
+  defp get_user(user) do
+    %{
+      first_name: user.first_name,
+      last_name: user.last_name
     }
   end
 end
