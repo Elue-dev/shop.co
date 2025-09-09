@@ -5,7 +5,7 @@ defmodule Shop.Schema.Review do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "reviews" do
-    field :rating, :integer
+    field :rating, :float
     field :title, :string
     field :comment, :string
     field :helpful_count, :integer, default: 0
@@ -21,6 +21,6 @@ defmodule Shop.Schema.Review do
     review
     |> cast(attrs, [:rating, :title, :comment, :helpful_count, :user_id, :product_id])
     |> validate_required([:rating, :title, :comment, :user_id, :product_id])
-    |> validate_inclusion(:rating, 1..5)
+    |> validate_number(:rating, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
   end
 end
