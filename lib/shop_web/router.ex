@@ -63,6 +63,7 @@ defmodule ShopWeb.Router do
 
     scope "/products" do
       get "/", Product.ProductController, :list_products
+      get "/categories", Category.CategoryController, :list_categories
     end
   end
 
@@ -76,10 +77,19 @@ defmodule ShopWeb.Router do
   end
 
   scope "/", ShopWeb do
+    pipe_through [:api, :auth, :admin, :uuid_check]
+
+    scope "/products" do
+      patch "/categories/:id", Category.CategoryController, :update
+    end
+  end
+
+  scope "/", ShopWeb do
     pipe_through [:api, :auth, :admin]
 
     scope "/products" do
       post "/", Product.ProductController, :add_product
+
       post "/categories", Category.CategoryController, :add_category
       post "/dress-style", DressStyle.DressStyleController, :add_dress_style
     end

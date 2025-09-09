@@ -14,9 +14,21 @@ defmodule Shop.Schema.Category do
 
   @doc false
   def changeset(category, attrs) do
-    category
-    |> cast(attrs, [:name, :description, :image])
-    |> validate_required([:name])
-    |> unique_constraint(:name)
+    allowed_fields = [:name, :description, :image]
+    provided_fields = Map.keys(attrs) |> Enum.map(&String.to_atom/1)
+    unexpected = provided_fields -- allowed_fields
+
+    changeset =
+      category
+      |> cast(attrs, allowed_fields)
+      |> validate_required([:name])
+      |> unique_constraint(:name)
+
+    if unexpected == [] do
+      changeset
+    else
+      changeset
+      |> add_error(:detail, "unrecognized parameter(s): #{Enum.join(unexpected, ", ")}")
+    end
   end
 end
