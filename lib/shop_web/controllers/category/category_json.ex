@@ -12,9 +12,7 @@ defmodule ShopWeb.Category.CategoryJSON do
   defp data(%Category{} = category) do
     %{
       id: category.id,
-      name: category.name,
-      description: category.description,
-      image: category.image
+      name: category.name
     }
   end
 end

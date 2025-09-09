@@ -13,8 +13,7 @@ defmodule ShopWeb.DressStyle.DressStyleJSON do
     %{
       id: dress_style.id,
       name: dress_style.name,
-      cover_photo: dress_style.cover_photo,
-      description: dress_style.description
+      cover_photo: dress_style.cover_photo
     }
   end
 end

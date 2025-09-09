@@ -1,8 +1,10 @@
 defmodule ShopWeb.DressStyle.DressStyleController do
   use ShopWeb, :controller
+  require Logger
 
   alias Shop.Schema.DressStyle
   alias Shop.Products.DressStyles
+  alias Shop.Helpers.ImageUploader
 
   action_fallback ShopWeb.FallbackController
 
@@ -11,11 +13,20 @@ defmodule ShopWeb.DressStyle.DressStyleController do
     render(conn, :index, dress_styles: dress_styles)
   end
 
-  def add_dress_style(conn, params) do
-    with {:ok, %DressStyle{} = dress_style} <- DressStyles.create_dress_style(params) do
-      conn
-      |> put_status(:created)
-      |> render(:show, dress_style: dress_style)
+  def add_dress_style(conn, %{"cover_photo" => cover_photo} = params) do
+    case ImageUploader.upload(cover_photo.path) do
+      {:ok, url} ->
+        params = params |> Map.put("cover_photo", url)
+
+        with {:ok, %DressStyle{} = dress_style} <- DressStyles.create_dress_style(params) do
+          conn
+          |> put_status(:created)
+          |> render(:show, dress_style: dress_style)
+        end
+
+      {:error, reason} ->
+        Loger.info("Error uploading cover photo: #{reason}")
+        {:error, :internal_server_error}
     end
   end
 
