@@ -46,9 +46,7 @@ defmodule ShopWeb.Product.ProductController do
   def list_product(conn, %{"id" => id}) do
     case Products.get_product(id) do
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "product not found"})
+        {:error, :item_not_found}
 
       product ->
         render(conn, :show, product: product)

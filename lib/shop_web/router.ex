@@ -73,7 +73,6 @@ defmodule ShopWeb.Router do
 
     scope "/products" do
       get "/:id", Product.ProductController, :list_product
-      delete "/:id", Product.ProductController, :delete
     end
   end
 
@@ -81,6 +80,8 @@ defmodule ShopWeb.Router do
     pipe_through [:api, :auth, :admin, :uuid_check]
 
     scope "/products" do
+      delete "/:id", Product.ProductController, :delete
+
       patch "/categories/:id", Category.CategoryController, :update
       patch "/dress-style/:id", DressStyle.DressStyleController, :update
       delete "/categories/:id", Category.CategoryController, :delete

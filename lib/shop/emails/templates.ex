@@ -12,7 +12,7 @@ defmodule Shop.Emails do
         <p>Thanks for joining <strong>Shop</strong>. We're excited to have you onboard 🎊</p>
         <p>Use the verification code below to activate your account:</p>
         <p style="text-align: center; font-size: 26px; font-weight: bold; letter-spacing: 4px; color: #4ea1ff; margin: 30px 0;">
-          ${token}
+          #{token}
         </p>
         <p>This code will expire in <strong>15 minutes</strong>.</p>
         <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;" />
