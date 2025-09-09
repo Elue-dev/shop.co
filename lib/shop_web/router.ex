@@ -35,6 +35,10 @@ defmodule ShopWeb.Router do
     plug ShopWeb.Auth.VerifyAdmin
   end
 
+  pipeline :uuid_check do
+    plug ShopWeb.Plugs.ValidateUUID
+  end
+
   scope "/", ShopWeb do
     pipe_through :api
   end
@@ -59,7 +63,15 @@ defmodule ShopWeb.Router do
 
     scope "/products" do
       get "/", Product.ProductController, :list_products
+    end
+  end
+
+  scope "/", ShopWeb do
+    pipe_through [:api, :uuid_check]
+
+    scope "/products" do
       get "/:id", Product.ProductController, :list_product
+      delete "/:id", Product.ProductController, :delete
     end
   end
 

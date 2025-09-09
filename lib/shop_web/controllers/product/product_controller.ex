@@ -43,7 +43,13 @@ defmodule ShopWeb.Product.ProductController do
     end
   end
 
-  def list_product(conn, %{"id" => id}) do
+  def list_product(conn, %{"id" => id}) when not is_binary(id) do
+    conn
+    |> put_status(:not_found)
+    |> json(%{error: "not a valid product id"})
+  end
+
+  def list_product(conn, %{"id" => id}) when is_binary(id) do
     case Products.get_product(id) do
       nil ->
         conn
@@ -63,11 +69,17 @@ defmodule ShopWeb.Product.ProductController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    product = Products.get_product!(id)
+  def delete_product(conn, %{"id" => id}) do
+    case Products.get_product(id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "product not found"})
 
-    with {:ok, %Product{}} <- Products.delete_product(product) do
-      send_resp(conn, :no_content, "")
+      product ->
+        with {:ok, %Product{}} <- Products.delete_product(product) do
+          send_resp(conn, :no_content, "")
+        end
     end
   end
 
