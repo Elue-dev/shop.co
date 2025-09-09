@@ -83,6 +83,8 @@ defmodule ShopWeb.Router do
     scope "/products" do
       patch "/categories/:id", Category.CategoryController, :update
       patch "/dress-style/:id", DressStyle.DressStyleController, :update
+      delete "/categories/:id", Category.CategoryController, :delete
+      delete "/dress-style/:id", DressStyle.DressStyleController, :delete
     end
   end
 

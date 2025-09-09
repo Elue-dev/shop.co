@@ -43,13 +43,7 @@ defmodule ShopWeb.Product.ProductController do
     end
   end
 
-  def list_product(conn, %{"id" => id}) when not is_binary(id) do
-    conn
-    |> put_status(:not_found)
-    |> json(%{error: "not a valid product id"})
-  end
-
-  def list_product(conn, %{"id" => id}) when is_binary(id) do
+  def list_product(conn, %{"id" => id}) do
     case Products.get_product(id) do
       nil ->
         conn

@@ -21,10 +21,16 @@ defmodule ShopWeb.Category.CategoryController do
 
   def update(conn, %{"id" => id} = params) when map_size(params) > 1 do
     category_params = params |> Map.delete("id")
-    category = Categories.get_category!(id)
 
-    with {:ok, %Category{} = category} <- Categories.update_category(category, category_params) do
-      render(conn, :show, category: category)
+    case Categories.get_category(id) do
+      nil ->
+        {:error, :item_not_found}
+
+      category ->
+        with {:ok, %Category{} = category} <-
+               Categories.update_category(category, category_params) do
+          render(conn, :show, category: category)
+        end
     end
   end
 
@@ -33,10 +39,18 @@ defmodule ShopWeb.Category.CategoryController do
   end
 
   def delete(conn, %{"id" => id}) do
-    category = Categories.get_category!(id)
+    case Categories.get_category(id) do
+      nil ->
+        {:error, :item_not_found}
 
-    with {:ok, %Category{}} <- Categories.delete_category(category) do
-      send_resp(conn, :no_content, "")
+      category ->
+        with {:ok, %Category{}} <- Categories.delete_category(category) do
+          send_resp(conn, :no_content, "")
+        end
     end
+  end
+
+  def delete(_conn, _params) do
+    {:error, :bad_request}
   end
 end

@@ -12,7 +12,7 @@ defmodule Shop.Products.Categories do
     Repo.all(Category)
   end
 
-  def get_category!(id), do: Repo.get!(Category, id)
+  def get_category(id), do: Repo.get(Category, id)
 
   def create_category(attrs) do
     %Category{}

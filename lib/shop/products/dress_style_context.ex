@@ -12,7 +12,9 @@ defmodule Shop.Products.DressStyles do
     Repo.all(DressStyle)
   end
 
-  def get_dress_style!(id), do: Repo.get!(DressStyle, id)
+  def get_dress_style(id) do
+    Repo.get(DressStyle, id)
+  end
 
   def create_dress_style(attrs) do
     %DressStyle{}

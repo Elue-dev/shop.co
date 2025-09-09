@@ -57,6 +57,12 @@ defmodule ShopWeb.FallbackController do
     |> json(%{error: "passwords must match"})
   end
 
+  def call(conn, {:error, :item_not_found}) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{error: "item not found"})
+  end
+
   def call(conn, {:error, :account_not_found}) do
     conn
     |> put_status(:bad_request)

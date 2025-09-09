@@ -21,7 +21,7 @@ defmodule Shop.Schema.DressStyle do
     changeset =
       dress_style
       |> cast(attrs, allowed_fields)
-      |> validate_required([:name])
+      |> validate_required([:name, :cover_photo])
       |> unique_constraint(:name)
 
     if unexpected == [] do
