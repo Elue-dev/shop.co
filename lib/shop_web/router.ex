@@ -29,6 +29,7 @@ defmodule ShopWeb.Router do
   pipeline :auth do
     plug ShopWeb.Auth.Pipeline
     plug ShopWeb.Plugs.SetAccount
+    plug ShopWeb.Plugs.ValidateActiveAccount
   end
 
   pipeline :admin do

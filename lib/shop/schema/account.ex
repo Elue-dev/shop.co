@@ -8,7 +8,7 @@ defmodule Shop.Schema.Account do
   schema "accounts" do
     field :name, :string
     field :type, Ecto.Enum, values: [:buyer, :seller]
-    field :status, Ecto.Enum, values: [:active, :inactive], default: :active
+    field :status, Ecto.Enum, values: [:active, :inactive], default: :inactive
     field :plan, :string, default: "free"
     field :role, Ecto.Enum, values: [:user, :admin], default: :user
     field :settings, :map, default: %{}

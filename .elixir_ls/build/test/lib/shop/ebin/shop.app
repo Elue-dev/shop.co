@@ -42,6 +42,7 @@
                         'Elixir.ShopWeb.Gettext',
                         'Elixir.ShopWeb.HealthController',
                         'Elixir.ShopWeb.Plugs.SetAccount',
+                        'Elixir.ShopWeb.Plugs.ValidateActiveAccount',
                         'Elixir.ShopWeb.Plugs.ValidateUUID',
                         'Elixir.ShopWeb.Plugs.VerifyAdmin',
                         'Elixir.ShopWeb.Product.ProductController',
