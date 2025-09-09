@@ -40,4 +40,25 @@ defmodule ShopWeb.Review.ReviewController do
       nil -> {:error, :item_not_found}
     end
   end
+
+  def mark_helpful(conn, %{"id" => id, "review_id" => review_id}) do
+    with product when not is_nil(product) <- Products.get_product(id),
+         {:ok, %Review{} = review} <-
+           Reviews.mark_review_as_helpful(review_id) do
+      render(conn, :show, review: review)
+    else
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "product not found"})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: reason})
+
+      error ->
+        error
+    end
+  end
 end

@@ -106,6 +106,7 @@ defmodule ShopWeb.Router do
     scope "/products" do
       post "/:id/review", Review.ReviewController, :add_product_review
       get "/:id/reviews", Review.ReviewController, :list_product_reviews
+      post "/:id/review/:review_id/helpful", Review.ReviewController, :mark_helpful
     end
   end
 
