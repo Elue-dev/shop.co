@@ -4,9 +4,8 @@ defmodule Shop.Schema.Account do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  # accounts.ex
+
   schema "accounts" do
-    # only meaningful for sellers
     field :name, :string
     field :type, Ecto.Enum, values: [:buyer, :seller]
     field :status, Ecto.Enum, values: [:active, :inactive], default: :active

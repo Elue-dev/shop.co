@@ -6,12 +6,12 @@ defmodule ShopWeb.DressStyle.DressStyleController do
 
   action_fallback ShopWeb.FallbackController
 
-  def index(conn, _params) do
+  def list_dress_styles(conn, _params) do
     dress_styles = DressStyles.list_dress_styles()
     render(conn, :index, dress_styles: dress_styles)
   end
 
-  def create(conn, params) do
+  def add_dress_style(conn, params) do
     with {:ok, %DressStyle{} = dress_style} <- DressStyles.create_dress_style(params) do
       conn
       |> put_status(:created)

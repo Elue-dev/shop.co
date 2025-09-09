@@ -43,14 +43,16 @@ defmodule ShopWeb.Product.ProductController do
     end
   end
 
-  def create(conn, params) do
-    params = handle_form_array(params, "sizes")
-    create(conn, Map.put(params, "images", []))
-  end
+  def list_product(conn, %{"id" => id}) do
+    case Products.get_product(id) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "product not found"})
 
-  def show(conn, %{"id" => id}) do
-    product = Products.get_product!(id)
-    render(conn, :show, product: product)
+      product ->
+        render(conn, :show, product: product)
+    end
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do

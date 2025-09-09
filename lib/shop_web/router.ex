@@ -59,6 +59,7 @@ defmodule ShopWeb.Router do
 
     scope "/products" do
       get "/", Product.ProductController, :list_products
+      get "/:id", Product.ProductController, :list_product
     end
   end
 
@@ -68,7 +69,7 @@ defmodule ShopWeb.Router do
     scope "/products" do
       post "/", Product.ProductController, :add_product
       post "/categories", Category.CategoryController, :add_category
-      post "/dress-style", DressStyle.DressStyleController, :add_review
+      post "/dress-style", DressStyle.DressStyleController, :add_dress_style
     end
   end
 

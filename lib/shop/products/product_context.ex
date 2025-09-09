@@ -15,10 +15,11 @@ defmodule Shop.Products do
     |> Repo.preload([:category, :dress_style])
   end
 
-  def get_product!(id) do
-    Product
-    |> Repo.get!(id)
-    |> Repo.preload([:category, :dress_style])
+  def get_product(id) do
+    case Repo.get(Product, id) do
+      nil -> nil
+      product -> Repo.preload(product, [:category, :dress_style])
+    end
   end
 
   def create_product(attrs) do
