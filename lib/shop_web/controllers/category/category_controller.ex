@@ -19,7 +19,7 @@ defmodule ShopWeb.Category.CategoryController do
     end
   end
 
-  def update(conn, %{"id" => id, "name" => name} = params) do
+  def update(conn, %{"id" => id} = params) when map_size(params) > 1 do
     category_params = Map.delete(params, "id")
     category = Categories.get_category!(id)
 

@@ -15,6 +15,7 @@ defmodule Shop.Schema.Category do
   @doc false
   def changeset(category, attrs) do
     allowed_fields = [:name, :description, :image]
+    # provided_fields = Map.keys(attrs) |> Enum.map(fn x -> String.to_atom(x) end)
     provided_fields = Map.keys(attrs) |> Enum.map(&String.to_atom/1)
     unexpected = provided_fields -- allowed_fields
 
