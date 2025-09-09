@@ -28,11 +28,11 @@ defmodule ShopWeb.Router do
 
   pipeline :auth do
     plug ShopWeb.Auth.Pipeline
-    plug ShopWeb.Auth.SetAccount
+    plug ShopWeb.Plugs.SetAccount
   end
 
   pipeline :admin do
-    plug ShopWeb.Auth.VerifyAdmin
+    plug ShopWeb.Plugs.VerifyAdmin
   end
 
   pipeline :uuid_check do

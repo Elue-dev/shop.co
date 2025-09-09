@@ -1,4 +1,4 @@
-defmodule ShopWeb.Auth.VerifyAdmin do
+defmodule ShopWeb.Plugs.VerifyAdmin do
   import Plug.Conn
   import Phoenix.Controller, only: [json: 2]
 

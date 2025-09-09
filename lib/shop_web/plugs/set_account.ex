@@ -1,4 +1,4 @@
-defmodule ShopWeb.Auth.SetAccount do
+defmodule ShopWeb.Plugs.SetAccount do
   import Plug.Conn
   alias Shop.Accounts
 
