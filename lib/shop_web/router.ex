@@ -24,6 +24,7 @@ defmodule ShopWeb.Router do
   pipeline :api do
     plug :accepts, ["json", "multipart"]
     plug :fetch_session
+    plug :put_secure_browser_headers
   end
 
   pipeline :auth do
