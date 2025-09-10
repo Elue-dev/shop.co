@@ -23,6 +23,10 @@ defmodule ShopWeb.Endpoint do
     gzip: not code_reloading?,
     only: ShopWeb.static_paths()
 
+  socket "/socket", ShopWeb.UserSocket,
+    websocket: true,
+    longpoll: false
+
   if code_reloading? do
     plug Phoenix.CodeReloader
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :shop

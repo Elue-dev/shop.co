@@ -3,6 +3,7 @@ defmodule ShopWeb.Category.CategoryController do
 
   alias Shop.Schema.Category
   alias Shop.Products.Categories
+  alias ShopWeb.Events.SocketHandlers
 
   action_fallback ShopWeb.FallbackController
 
@@ -13,6 +14,8 @@ defmodule ShopWeb.Category.CategoryController do
 
   def add_category(conn, params) do
     with {:ok, %Category{} = category} <- Categories.create_category(params) do
+      SocketHandlers.publish_category(:add, %{name: category.name})
+
       conn
       |> put_status(:created)
       |> render(:show, category: category)
@@ -45,6 +48,8 @@ defmodule ShopWeb.Category.CategoryController do
 
       category ->
         with {:ok, %Category{}} <- Categories.delete_category(category) do
+          SocketHandlers.publish_category(:delete, %{name: category.name})
+
           send_resp(conn, :no_content, "")
         end
     end

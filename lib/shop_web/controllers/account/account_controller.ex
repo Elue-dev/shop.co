@@ -78,7 +78,6 @@ defmodule ShopWeb.Account.AccountController do
 
   def verify_and_activate_account(conn, %{"id" => id, "token" => token}) do
     account = Accounts.get_account_expanded!(id)
-    IO.puts("account => #{inspect(account)}")
 
     cond do
       account == nil ->
