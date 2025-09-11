@@ -10,9 +10,9 @@ defmodule Shop.Repo.Migrations.CreateOrders do
       add :billing_address, :string
       add :payment_method, :string
       add :placed_at, :utc_datetime_usec
-      add :user_id, references(:"users:type:binary_id", on_delete: :nothing, type: :binary_id)
+      add :user_id, references(:users, type: :binary_id, on_delete: :nothing)
 
-      timestamps(type: :utc_datetime)
+      timestamps(type: :utc_datetime_usec)
     end
 
     create index(:orders, [:user_id])
