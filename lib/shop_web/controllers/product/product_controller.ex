@@ -22,8 +22,7 @@ defmodule ShopWeb.Product.ProductController do
     next_cursor = Map.get(params, "next")
 
     result = Products.list_products(filters, limit, prev_cursor, next_cursor)
-
-    json(conn, result)
+    render(conn, :index, products: result.data, pagination: result.pagination)
   end
 
   def add_product(conn, %{"images" => images} = params) do

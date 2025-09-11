@@ -1,12 +1,15 @@
 defmodule ShopWeb.Product.ProductJSON do
   alias Shop.Schema.Product
 
-  def index(%{products: products}) do
-    %{data: for(product <- products, do: data(product))}
-  end
-
   def show(%{product: product}) do
     %{data: data(product)}
+  end
+
+  def index(%{products: products, pagination: pagination}) do
+    %{
+      data: for(product <- products, do: data(product)),
+      pagination: pagination
+    }
   end
 
   defp data(%Product{} = product) do
@@ -20,6 +23,7 @@ defmodule ShopWeb.Product.ProductJSON do
       sizes: product.sizes,
       stock_quantity: product.stock_quantity,
       is_active: product.is_active,
+      avg_rating: product.avg_rating && Float.round(product.avg_rating, 1),
       category: category_data(product.category),
       dress_style: dress_style_data(product.dress_style)
     }

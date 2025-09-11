@@ -36,6 +36,10 @@ defmodule Shop.Schema.Product do
     belongs_to :category, Shop.Schema.Category, type: :binary_id
     belongs_to :dress_style, Shop.Schema.DressStyle, type: :binary_id
 
+    has_many :reviews, Shop.Schema.Review, foreign_key: :product_id
+
+    field :avg_rating, :float, virtual: true
+
     timestamps(type: :utc_datetime)
   end
 

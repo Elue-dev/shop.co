@@ -20,6 +20,9 @@ defmodule Shop.Products do
     base_query =
       Product
       |> ProductQueryBuilder.build_query(filters)
+      |> join(:left, [p], r in assoc(p, :reviews))
+      |> group_by([p], p.id)
+      |> select_merge([p, r], %{avg_rating: avg(r.rating)})
       |> order_by([p], asc: p.inserted_at)
 
     query =
@@ -57,7 +60,13 @@ defmodule Shop.Products do
   end
 
   def get_product(id) do
-    case Repo.get(Product, id) do
+    Product
+    |> where([p], p.id == ^id)
+    |> join(:left, [p], r in assoc(p, :reviews))
+    |> group_by([p], p.id)
+    |> select_merge([p, r], %{avg_rating: avg(r.rating)})
+    |> Repo.one()
+    |> case do
       nil -> nil
       product -> Repo.preload(product, [:category, :dress_style])
     end
