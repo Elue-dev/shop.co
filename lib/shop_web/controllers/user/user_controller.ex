@@ -1,11 +1,8 @@
 defmodule ShopWeb.User.UserController do
   use ShopWeb, :controller
 
-  alias Shop.Repo
-  alias Shop.Users
+  alias Shop.{Repo, Users, Mailer, Emails}
   alias Shop.Schema.PasswordResetToken
-  alias Shop.Mailer
-  alias Shop.Emails
 
   import Ecto.Query, warn: false
 

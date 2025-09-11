@@ -5,7 +5,6 @@ defmodule Shop.Products.Reviews do
 
   import Ecto.Query, warn: false
   alias Shop.Repo
-
   alias Shop.Schema.Review
 
   def get_review(id) do

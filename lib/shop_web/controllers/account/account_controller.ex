@@ -4,11 +4,7 @@ defmodule ShopWeb.Account.AccountController do
   alias ShopWeb.Auth.Guardian
 
   alias Shop.Schema.{Account, User, OtpToken}
-  alias Shop.Accounts
-  alias Shop.Users
-  alias Shop.Repo
-  alias Shop.Mailer
-  alias Shop.Emails
+  alias Shop.{Accounts, Users, Repo, Mailer, Emails}
 
   require Logger
 

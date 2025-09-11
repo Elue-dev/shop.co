@@ -3,8 +3,7 @@ defmodule ShopWeb.Product.ProductController do
 
   alias Shop.Schema.Product
   alias Shop.Products
-  alias Shop.Helpers.ImageUploader
-  alias Shop.Helpers.ProductFilters
+  alias Shop.Helpers.{ImageUploader, ProductFilters}
 
   action_fallback ShopWeb.FallbackController
 

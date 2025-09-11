@@ -5,9 +5,7 @@ defmodule Shop.Products do
   import Ecto.Query, warn: false
   alias Shop.Repo
   alias Shop.Schema.Product
-  alias Shop.Helpers.Pagination
-
-  alias Shop.Helpers.ProductQueryBuilder
+  alias Shop.Helpers.{Pagination, ProductQueryBuilder}
 
   # def list_products(filters \\ %{}) do
   #   Product
