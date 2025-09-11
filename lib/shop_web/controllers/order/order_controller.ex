@@ -11,12 +11,21 @@ defmodule ShopWeb.Order.OrderController do
     render(conn, :index, orders: orders)
   end
 
-  def create(conn, %{"order" => order_params}) do
-    with {:ok, %Order{} = order} <- Orders.create_order(order_params) do
+  def place(conn, params) do
+    user_id = conn.assigns.account.user.id
+
+    params =
+      params |> Map.put("user_id", user_id)
+
+    with {:ok, %Order{} = order} <- Orders.create_order(params) do
       conn
       |> put_status(:created)
       |> render(:show, order: order)
     end
+  end
+
+  def place(_conn, _params) do
+    {:error, :bad_request}
   end
 
   def show(conn, %{"id" => id}) do

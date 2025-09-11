@@ -4,6 +4,20 @@ defmodule Shop.Schema.Order do
   alias Shop.Schema.OrderItem
   alias Decimal
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :payment_status,
+             :total_amount,
+             :shipping_address,
+             :billing_address,
+             :payment_method,
+             :placed_at,
+             :user_id,
+             :order_items,
+             :inserted_at,
+             :updated_at
+           ]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
@@ -13,8 +27,8 @@ defmodule Shop.Schema.Order do
   schema "orders" do
     field :payment_status, Ecto.Enum, values: @payment_statuses, default: :pending
     field :total_amount, :decimal
-    field :shipping_address, :map
-    field :billing_address, :map
+    field :shipping_address, :string
+    field :billing_address, :string
     field :payment_method, Ecto.Enum, values: @payment_methods
     field :placed_at, :utc_datetime_usec
 
@@ -29,7 +43,7 @@ defmodule Shop.Schema.Order do
     order
     |> cast(attrs, [
       :user_id,
-      :status,
+      :payment_status,
       :total_amount,
       :shipping_address,
       :billing_address,
@@ -38,12 +52,12 @@ defmodule Shop.Schema.Order do
     ])
     |> validate_required([
       :user_id,
-      :status,
       :shipping_address,
       :billing_address,
       :payment_method
     ])
     |> cast_assoc(:order_items, with: &OrderItem.changeset/2, required: false)
+    |> put_change(:placed_at, DateTime.utc_now())
     |> compute_total_amount_from_items(attrs)
   end
 
@@ -68,6 +82,11 @@ defmodule Shop.Schema.Order do
   defp subtotal_from_item_param(%{unit_price: up, quantity: q}), do: multiply_unit_qty(up, q)
   defp subtotal_from_item_param(_), do: Decimal.new(0)
 
+  defp multiply_unit_qty(unit_price, quantity) when is_float(unit_price) do
+    unit_price_str = :erlang.float_to_binary(unit_price, [:compact])
+    Decimal.mult(Decimal.new(unit_price_str), Decimal.new(quantity || 0))
+  end
+
   defp multiply_unit_qty(unit_price, quantity) when is_binary(unit_price) do
     Decimal.mult(Decimal.new(unit_price), Decimal.new(quantity || 0))
   end
@@ -76,8 +95,9 @@ defmodule Shop.Schema.Order do
     Decimal.mult(unit_price, Decimal.new(quantity || 0))
   end
 
-  defp multiply_unit_qty(unit_price, quantity)
-       when is_integer(unit_price) or is_float(unit_price) do
+  defp multiply_unit_qty(unit_price, quantity) when is_integer(unit_price) do
     Decimal.mult(Decimal.new(unit_price), Decimal.new(quantity || 0))
   end
+
+  defp multiply_unit_qty(_, _), do: Decimal.new(0)
 end

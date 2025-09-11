@@ -18,6 +18,13 @@ defmodule Shop.Orders do
     %Order{}
     |> Order.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, order} ->
+        {:ok, Repo.preload(order, [:user, :order_items])}
+
+      error ->
+        error
+    end
   end
 
   def update_order(%Order{} = order, attrs) do

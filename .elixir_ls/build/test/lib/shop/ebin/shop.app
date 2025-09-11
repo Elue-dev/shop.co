@@ -1,5 +1,7 @@
 {application,shop,
-             [{modules,['Elixir.Jason.Encoder.Shop.Schema.Product',
+             [{modules,['Elixir.Jason.Encoder.Shop.Schema.Order',
+                        'Elixir.Jason.Encoder.Shop.Schema.OrderItem',
+                        'Elixir.Jason.Encoder.Shop.Schema.Product',
                         'Elixir.Shop','Elixir.Shop.Accounts',
                         'Elixir.Shop.Application','Elixir.Shop.DataCase',
                         'Elixir.Shop.DressStylesFixtures',

@@ -3,6 +3,8 @@ defmodule Shop.Schema.OrderItem do
   import Ecto.Changeset
   alias Decimal
 
+  @derive {Jason.Encoder,
+           only: [:id, :product_id, :quantity, :unit_price, :subtotal, :inserted_at, :updated_at]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
@@ -30,27 +32,18 @@ defmodule Shop.Schema.OrderItem do
     quantity = get_field(changeset, :quantity)
     unit_price = get_field(changeset, :unit_price)
 
-    cond do
-      is_nil(quantity) or is_nil(unit_price) ->
-        changeset
+    if is_nil(quantity) or is_nil(unit_price) do
+      changeset
+    else
+      subtotal =
+        case unit_price do
+          %Decimal{} -> Decimal.mult(unit_price, Decimal.new(quantity))
+          up when is_binary(up) -> Decimal.mult(Decimal.new(up), Decimal.new(quantity))
+          up when is_integer(up) -> Decimal.mult(Decimal.new(up), Decimal.new(quantity))
+          _ -> Decimal.new(0)
+        end
 
-      true ->
-        subtotal =
-          case unit_price do
-            %Decimal{} ->
-              Decimal.mult(unit_price, Decimal.new(quantity))
-
-            up when is_binary(up) ->
-              Decimal.mult(Decimal.new(up), Decimal.new(quantity))
-
-            up when is_integer(up) or is_float(up) ->
-              Decimal.mult(Decimal.new(up), Decimal.new(quantity))
-
-            _ ->
-              Decimal.new(0)
-          end
-
-        put_change(changeset, :subtotal, subtotal)
+      put_change(changeset, :subtotal, subtotal)
     end
   end
 end
