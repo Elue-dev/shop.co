@@ -3,11 +3,9 @@ defmodule ShopWeb.Account.AccountController do
 
   alias ShopWeb.Auth.Guardian
 
-  alias Shop.Schema.Account
-  alias Shop.Schema.User
+  alias Shop.Schema.{Account, User, OtpToken}
   alias Shop.Accounts
   alias Shop.Users
-  alias Shop.Schema.OtpToken
   alias Shop.Repo
   alias Shop.Mailer
   alias Shop.Emails
@@ -16,14 +14,12 @@ defmodule ShopWeb.Account.AccountController do
 
   action_fallback ShopWeb.FallbackController
 
-  def register(conn, params) do
-    account_params =
-      params
-      |> Map.take(["name", "type", "plan", "settings", "metadata"])
+  @account_fields ["name", "type", "plan", "settings", "metadata"]
+  @user_fields ["password", "email", "first_name", "last_name", "phone"]
 
-    user_params =
-      params
-      |> Map.take(["password", "email", "first_name", "last_name", "phone"])
+  def register(conn, params) do
+    account_params = params |> Map.take(@account_fields)
+    user_params = params |> Map.take(@user_fields)
 
     with {:ok, %Account{} = account} <- Accounts.create_account(account_params),
          {:ok, %User{} = user} <- Users.create_user(account, user_params) do
