@@ -8,10 +8,22 @@ defmodule ShopWeb.Product.ProductController do
 
   action_fallback ShopWeb.FallbackController
 
+  # def list_products(conn, params) do
+  #   filters = ProductFilters.parse_filters(params)
+  #   products = Products.list_products(filters)
+  #   render(conn, :index, products: products)
+  # end
+
   def list_products(conn, params) do
     filters = ProductFilters.parse_filters(params)
-    products = Products.list_products(filters)
-    render(conn, :index, products: products)
+
+    limit = Map.get(params, "limit", "15") |> String.to_integer()
+    prev_cursor = Map.get(params, "prev")
+    next_cursor = Map.get(params, "next")
+
+    result = Products.list_products(filters, limit, prev_cursor, next_cursor)
+
+    json(conn, result)
   end
 
   def add_product(conn, %{"images" => images} = params) do

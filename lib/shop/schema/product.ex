@@ -7,6 +7,22 @@ defmodule Shop.Schema.Product do
 
   @sizes [:small, :medium, :large, :x_large]
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :price,
+             :description,
+             :discount_price,
+             :images,
+             :sizes,
+             :stock_quantity,
+             :is_active,
+             :category_id,
+             :dress_style_id,
+             :inserted_at,
+             :updated_at
+           ]}
   schema "products" do
     field :name, :string
     field :price, :decimal
