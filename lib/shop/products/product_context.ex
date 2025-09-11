@@ -52,9 +52,9 @@ defmodule Shop.Products do
     %{
       data: products,
       pagination: %{
-        before: products |> List.first() |> Pagination.build_cursor(),
+        prev: products |> List.first() |> Pagination.build_cursor(),
         after: products |> List.last() |> Pagination.build_cursor(),
-        limit: limit
+        next: limit
       }
     }
   end
