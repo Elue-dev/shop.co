@@ -7,21 +7,14 @@ defmodule Shop.Products do
   alias Shop.Schema.Product
   alias Shop.Helpers.{Pagination, ProductQueryBuilder}
 
-  # def list_products(filters \\ %{}) do
-  #   Product
-  #   |> ProductQueryBuilder.build_query(filters)
-  #   |> Repo.all()
-  #   |> Repo.preload([:category, :dress_style])
-  # end
-
-  def list_products(filters \\ %{}, limit \\ 15, prev \\ nil, next \\ nil) do
+  def list_products(filters \\ %{}, limit, prev \\ nil, next \\ nil) do
     base_query =
       Product
       |> ProductQueryBuilder.build_query(filters)
       |> join(:left, [p], r in assoc(p, :reviews))
       |> group_by([p], p.id)
       |> select_merge([p, r], %{avg_rating: avg(r.rating)})
-      |> order_by([p], asc: p.inserted_at)
+      |> order_by([p], desc: p.inserted_at, desc: p.id)
 
     query =
       cond do
@@ -47,11 +40,24 @@ defmodule Shop.Products do
       |> Repo.all()
       |> Repo.preload([:category, :dress_style])
 
+    is_first_page = is_nil(prev) and is_nil(next)
+    has_next_page = length(products) == limit and not is_nil(List.last(products))
+
     %{
       data: products,
       pagination: %{
-        prev: products |> List.first() |> Pagination.build_cursor(),
-        next: products |> List.last() |> Pagination.build_cursor(),
+        prev:
+          cond do
+            is_first_page -> nil
+            length(products) > 0 -> products |> List.first() |> Pagination.build_cursor()
+            true -> nil
+          end,
+        next:
+          if has_next_page do
+            products |> List.last() |> Pagination.build_cursor()
+          else
+            nil
+          end,
         limit: limit
       }
     }

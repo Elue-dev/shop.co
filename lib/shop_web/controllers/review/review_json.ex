@@ -1,8 +1,11 @@
 defmodule ShopWeb.Review.ReviewJSON do
   alias Shop.Schema.Review
 
-  def index(%{reviews: reviews}) do
-    %{data: for(review <- reviews, do: data(review))}
+  def index(%{reviews: reviews, pagination: pagination}) do
+    %{
+      data: for(review <- reviews, do: data(review)),
+      pagination: pagination
+    }
   end
 
   def show(%{review: review}) do

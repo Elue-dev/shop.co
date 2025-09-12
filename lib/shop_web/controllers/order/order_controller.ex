@@ -6,9 +6,13 @@ defmodule ShopWeb.Order.OrderController do
 
   action_fallback ShopWeb.FallbackController
 
-  def index(conn, _params) do
-    orders = Orders.list_orders()
-    render(conn, :index, orders: orders)
+  def my_orders(conn, _params) do
+    with %{account: %{user: %{id: user_id}}} <- conn.assigns do
+      orders = Orders.list_orders(user_id)
+      render(conn, :index, orders: orders)
+    else
+      _ -> {:error, :unauthorized}
+    end
   end
 
   def place(conn, params) do
@@ -24,11 +28,7 @@ defmodule ShopWeb.Order.OrderController do
     end
   end
 
-  def place(_conn, _params) do
-    {:error, :bad_request}
-  end
-
-  def show(conn, %{"id" => id}) do
+  def get(conn, %{"id" => id}) do
     order = Orders.get_order!(id)
     render(conn, :show, order: order)
   end

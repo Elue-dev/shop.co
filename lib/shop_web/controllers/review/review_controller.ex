@@ -32,10 +32,13 @@ defmodule ShopWeb.Review.ReviewController do
     {:error, :bad_request}
   end
 
-  def list_product_reviews(conn, %{"id" => id}) do
+  def list_product_reviews(conn, %{"id" => id} = params) do
     with product when not is_nil(product) <- Products.get_product(id) do
-      reviews = Reviews.list_product_reviews(product.id)
-      render(conn, :index, reviews: reviews)
+      limit = Map.get(params, "limit", "6") |> String.to_integer()
+      prev_cursor = Map.get(params, "prev")
+      next_cursor = Map.get(params, "next")
+      result = Reviews.list_product_reviews(product.id, limit, prev_cursor, next_cursor)
+      render(conn, :index, reviews: result.data, pagination: result.pagination)
     else
       nil -> {:error, :item_not_found}
     end

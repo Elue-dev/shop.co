@@ -8,8 +8,11 @@ defmodule Shop.Orders do
 
   alias Shop.Schema.Order
 
-  def list_orders do
-    Repo.all(Order)
+  def list_orders(user_id) do
+    Order
+    |> where([o], o.user_id == ^user_id)
+    |> Repo.all()
+    |> Repo.preload([:user, :order_items])
   end
 
   def get_order!(id), do: Repo.get!(Order, id)

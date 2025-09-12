@@ -116,6 +116,7 @@ defmodule ShopWeb.Router do
     pipe_through [:api, :auth]
 
     scope "/orders" do
+      get "/me", Order.OrderController, :my_orders
       post "/", Order.OrderController, :place
     end
   end
