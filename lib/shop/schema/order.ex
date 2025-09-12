@@ -1,7 +1,7 @@
 defmodule Shop.Schema.Order do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Shop.Schema.OrderItem
+  alias Shop.Schema.{OrderItem, Address}
   alias Decimal
 
   @derive {Jason.Encoder,
@@ -18,6 +18,7 @@ defmodule Shop.Schema.Order do
              :inserted_at,
              :updated_at
            ]}
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
@@ -27,13 +28,14 @@ defmodule Shop.Schema.Order do
   schema "orders" do
     field :payment_status, Ecto.Enum, values: @payment_statuses, default: :pending
     field :total_amount, :decimal
-    field :shipping_address, :string
-    field :billing_address, :string
     field :payment_method, Ecto.Enum, values: @payment_methods
     field :placed_at, :utc_datetime_usec
 
     belongs_to :user, Shop.Schema.User, type: :binary_id
     has_many :order_items, OrderItem, foreign_key: :order_id, on_replace: :delete
+
+    embeds_one :shipping_address, Address, on_replace: :update
+    embeds_one :billing_address, Address, on_replace: :update
 
     timestamps(type: :utc_datetime_usec)
   end
@@ -45,8 +47,6 @@ defmodule Shop.Schema.Order do
       :user_id,
       :payment_status,
       :total_amount,
-      :shipping_address,
-      :billing_address,
       :payment_method,
       :placed_at
     ])
@@ -57,6 +57,8 @@ defmodule Shop.Schema.Order do
       :payment_method
     ])
     |> cast_assoc(:order_items, with: &OrderItem.changeset/2, required: false)
+    |> cast_embed(:shipping_address, with: &Address.changeset/2, required: true)
+    |> cast_embed(:billing_address, with: &Address.changeset/2, required: true)
     |> put_change(:placed_at, DateTime.utc_now())
     |> compute_total_amount_from_items(attrs)
   end

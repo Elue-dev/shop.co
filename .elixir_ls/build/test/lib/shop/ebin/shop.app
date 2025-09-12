@@ -22,6 +22,7 @@
                         'Elixir.Shop.ReviewsFixtures',
                         'Elixir.Shop.Schema.Account',
                         'Elixir.Shop.Schema.AccountUser',
+                        'Elixir.Shop.Schema.Address',
                         'Elixir.Shop.Schema.Category',
                         'Elixir.Shop.Schema.DressStyle',
                         'Elixir.Shop.Schema.Order',
