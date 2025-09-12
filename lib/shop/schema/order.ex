@@ -50,15 +50,15 @@ defmodule Shop.Schema.Order do
       :payment_method,
       :placed_at
     ])
+    |> cast_assoc(:order_items, with: &OrderItem.changeset/2, required: false)
+    |> cast_embed(:shipping_address, with: &Address.changeset/2, required: true)
+    |> cast_embed(:billing_address, with: &Address.changeset/2, required: true)
     |> validate_required([
       :user_id,
       :shipping_address,
       :billing_address,
       :payment_method
     ])
-    |> cast_assoc(:order_items, with: &OrderItem.changeset/2, required: false)
-    |> cast_embed(:shipping_address, with: &Address.changeset/2, required: true)
-    |> cast_embed(:billing_address, with: &Address.changeset/2, required: true)
     |> put_change(:placed_at, DateTime.utc_now())
     |> compute_total_amount_from_items(attrs)
   end
