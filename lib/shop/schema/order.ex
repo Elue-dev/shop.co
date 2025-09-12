@@ -32,6 +32,8 @@ defmodule Shop.Schema.Order do
     field :placed_at, :utc_datetime_usec
 
     belongs_to :user, Shop.Schema.User, type: :binary_id
+    belongs_to :coupon, Shop.Schema.Coupon, type: :binary_id
+
     has_many :order_items, OrderItem, foreign_key: :order_id, on_replace: :delete
 
     embeds_one :shipping_address, Address, on_replace: :update
@@ -48,7 +50,8 @@ defmodule Shop.Schema.Order do
       :payment_status,
       :total_amount,
       :payment_method,
-      :placed_at
+      :placed_at,
+      :coupon_id
     ])
     |> cast_assoc(:order_items, with: &OrderItem.changeset/2, required: false)
     |> cast_embed(:shipping_address, with: &Address.changeset/2, required: true)
