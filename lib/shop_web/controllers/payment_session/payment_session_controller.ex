@@ -135,11 +135,4 @@ defmodule ShopWeb.PaymentSessionController do
         "Payment error: #{String.replace(message, "_", " ") |> String.capitalize()}"
     end
   end
-
-  defp format_error(message, body) do
-    case Jason.decode(body) do
-      {:ok, parsed} -> "#{message}: #{inspect(parsed)}"
-      {:error, _} -> "#{message}: #{body}"
-    end
-  end
 end
