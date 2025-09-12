@@ -129,6 +129,25 @@ defmodule ShopWeb.Router do
     end
   end
 
+  scope "/", ShopWeb do
+    pipe_through [:api, :auth, :admin]
+
+    scope "/coupons" do
+      get "/", Coupon.CouponController, :list
+
+      post "/", Coupon.CouponController, :create
+    end
+  end
+
+  scope "/", ShopWeb do
+    pipe_through [:api, :auth, :admin, :uuid_check]
+
+    scope "/coupons" do
+      patch "/:id", Coupon.CouponController, :update
+      delete "/:id", Coupon.CouponController, :delete
+    end
+  end
+
   if Application.compile_env(:shop, :dev_routes) do
     scope "/dev" do
       pipe_through [:fetch_session, :protect_from_forgery]

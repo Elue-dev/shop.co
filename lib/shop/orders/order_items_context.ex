@@ -29,8 +29,4 @@ defmodule Shop.OrderItems do
   def delete_order_item(%OrderItem{} = order_item) do
     Repo.delete(order_item)
   end
-
-  def change_order_item(%OrderItem{} = order_item, attrs \\ %{}) do
-    OrderItem.changeset(order_item, attrs)
-  end
 end

@@ -31,8 +31,4 @@ defmodule Shop.Products.DressStyles do
   def delete_dress_style(%DressStyle{} = dress_style) do
     Repo.delete(dress_style)
   end
-
-  def change_dress_style(%DressStyle{} = dress_style, attrs \\ %{}) do
-    DressStyle.changeset(dress_style, attrs)
-  end
 end

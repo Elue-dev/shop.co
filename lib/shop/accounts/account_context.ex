@@ -42,8 +42,4 @@ defmodule Shop.Accounts do
   def delete_account(%Account{} = account) do
     Repo.delete(account)
   end
-
-  def change_account(%Account{} = account, attrs \\ %{}) do
-    Account.changeset(account, attrs)
-  end
 end

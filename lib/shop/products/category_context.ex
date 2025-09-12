@@ -29,8 +29,4 @@ defmodule Shop.Products.Categories do
   def delete_category(%Category{} = category) do
     Repo.delete(category)
   end
-
-  def change_category(%Category{} = category, attrs \\ %{}) do
-    Category.changeset(category, attrs)
-  end
 end
