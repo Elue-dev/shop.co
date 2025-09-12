@@ -11,6 +11,28 @@ defmodule ShopWeb.Coupon.CouponController do
     render(conn, :index, coupons: coupons)
   end
 
+  def validate(conn, %{"code" => code} = _params) do
+    case Coupons.validate_coupon(code) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "invalid coupon code"})
+
+      coupon ->
+        if coupon.active do
+          render(conn, :show, coupon: coupon)
+        else
+          conn
+          |> put_status(:not_found)
+          |> json(%{error: "invalid coupon code"})
+        end
+    end
+  end
+
+  def validate(_conn, _params) do
+    {:error, :bad_request}
+  end
+
   def create(conn, params) do
     with {:ok, %Coupon{} = coupon} <- Coupons.create_coupon(params) do
       conn

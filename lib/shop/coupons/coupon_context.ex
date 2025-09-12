@@ -12,6 +12,12 @@ defmodule Shop.Coupons do
     Repo.get(Coupon, id)
   end
 
+  def validate_coupon(code) do
+    Coupon
+    |> where([c], c.code == ^code)
+    |> Repo.one()
+  end
+
   def create_coupon(attrs) do
     %Coupon{}
     |> Coupon.changeset(attrs)
