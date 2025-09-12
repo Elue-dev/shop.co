@@ -59,6 +59,7 @@
                         'Elixir.ShopWeb.Order.OrderJSON',
                         'Elixir.ShopWeb.OrderItemController',
                         'Elixir.ShopWeb.OrderItemJSON',
+                        'Elixir.ShopWeb.PaymentSessionController',
                         'Elixir.ShopWeb.Plugs.SetAccount',
                         'Elixir.ShopWeb.Plugs.ValidateActiveAccount',
                         'Elixir.ShopWeb.Plugs.ValidateUUID',
