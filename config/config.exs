@@ -34,6 +34,10 @@ config :shop, :cloudinary,
   api_key: "compile-time-placeholder",
   api_secret: "compile-time-placeholder"
 
+config :shop, :juice_creds,
+  api_url: "https://api-sandbox.spendjuice.com",
+  api_key: "compile-time-placeholder"
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 

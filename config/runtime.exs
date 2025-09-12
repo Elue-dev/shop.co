@@ -17,6 +17,10 @@ config :shop, :cloudinary,
   api_key: System.get_env("CLOUDINARY_API_KEY"),
   api_secret: System.get_env("CLOUDINARY_API_SECRET")
 
+config :shop, :juice_creds,
+  api_url: System.get_env("JUICE_API_URL"),
+  api_key: System.get_env("JUICE_API_KEY")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

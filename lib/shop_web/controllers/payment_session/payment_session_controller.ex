@@ -6,8 +6,9 @@ defmodule ShopWeb.PaymentSessionController do
   """
 
   require Logger
-  @base_url "https://api-sandbox.spendjuice.com"
-  @api_key System.get_env("JUICE_API_KEY")
+
+  defp base_url, do: Application.get_env(:shop, :juice_creds)[:api_url]
+  defp api_key, do: Application.get_env(:shop, :juice_creds)[:api_key]
 
   def create_and_confirm_payment_session(conn, params) do
     case make_payment_request(params) do
@@ -31,19 +32,19 @@ defmodule ShopWeb.PaymentSessionController do
   defp make_payment_request(payment_data) do
     headers = [
       {"Content-Type", "application/json"},
-      {"Authorization", "#{@api_key}"}
+      {"Authorization", api_key()}
     ]
 
-    with {:ok, session_id} <- create_session(payment_data, headers),
-         {:ok, response} <- confirm_session(session_id, headers) do
+    with {:ok, session_id} <- initialize_session(payment_data, headers),
+         {:ok, response} <- capture_session(session_id, headers) do
       {:ok, response}
     else
       {:error, reason} -> {:error, reason}
     end
   end
 
-  defp create_session(payment_data, headers) do
-    url = "#{@base_url}/payment-sessions"
+  defp initialize_session(payment_data, headers) do
+    url = "#{base_url()}/payment-sessions"
 
     case HTTPoison.post(url, Jason.encode!(payment_data), headers) do
       {:ok, %HTTPoison.Response{status_code: status, body: body}} when status in [200, 201] ->
@@ -70,17 +71,14 @@ defmodule ShopWeb.PaymentSessionController do
     end
   end
 
-  defp confirm_session(session_id, headers) do
-    url = "#{@base_url}/payment-sessions/#{session_id}"
-    Logger.info("Confirming session: #{session_id}")
+  defp capture_session(session_id, headers) do
+    url = "#{base_url()}/payment-sessions/#{session_id}"
 
     case HTTPoison.post(url, Jason.encode!(%{}), headers) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        Logger.info("Confirm response: #{body}")
         Jason.decode(body)
 
       {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
-        Logger.error("Confirm error: #{body}")
         {:error, format_api_error(status, body)}
 
       {:error, error} ->
