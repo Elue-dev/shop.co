@@ -20,7 +20,9 @@ defmodule ShopWeb.Order.OrderJSON do
       payment_method: order.payment_method,
       placed_at: order.placed_at,
       user: get_user(order.user),
-      items: get_order_items(order.order_items)
+      items: get_order_items(order.order_items),
+      inserted_at: order.inserted_at,
+      updated_at: order.updated_at
     }
   end
 
