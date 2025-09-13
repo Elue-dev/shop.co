@@ -13,7 +13,7 @@ defmodule Shop.Chats do
     )
   end
 
-  def get_chat!(id), do: Repo.get!(Chat, id)
+  def get_chat(id), do: Repo.get(Chat, id)
 
   def create_chat(attrs) do
     %Chat{}

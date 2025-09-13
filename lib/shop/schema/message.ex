@@ -8,7 +8,8 @@ defmodule Shop.Schema.Message do
     field :content, :string
     field :read_at, :utc_datetime_usec
     field :chat_id, :binary_id
-    field :sender_id, :binary_id
+
+    belongs_to :sender, Shop.Schema.User, type: :binary_id, foreign_key: :sender_id
 
     timestamps(type: :utc_datetime)
   end
@@ -16,7 +17,7 @@ defmodule Shop.Schema.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:content, :read_at])
-    |> validate_required([:content, :read_at])
+    |> cast(attrs, [:content, :read_at, :chat_id, :sender_id])
+    |> validate_required([:content])
   end
 end

@@ -65,8 +65,14 @@ defmodule ShopWeb.FallbackController do
 
   def call(conn, {:error, :account_not_found}) do
     conn
-    |> put_status(:bad_request)
+    |> put_status(:not_found)
     |> json(%{error: "account not found"})
+  end
+
+  def call(conn, {:error, :chat_not_found}) do
+    conn
+    |> put_status(:not_found)
+    |> json(%{error: "chat not found"})
   end
 
   def call(conn, {:error, :already_active}) do

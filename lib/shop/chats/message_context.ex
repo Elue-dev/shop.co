@@ -4,8 +4,13 @@ defmodule Shop.Chats.Messages do
 
   alias Shop.Schema.Message
 
-  def list_messages do
-    Repo.all(Message)
+  def list_messages(chat_id) do
+    Repo.all(
+      from m in Message,
+        where: m.chat_id == ^chat_id,
+        order_by: [asc: m.inserted_at],
+        preload: [:sender]
+    )
   end
 
   def get_message!(id), do: Repo.get!(Message, id)
@@ -14,6 +19,10 @@ defmodule Shop.Chats.Messages do
     %Message{}
     |> Message.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, message} -> {:ok, Repo.preload(message, [:sender])}
+      error -> error
+    end
   end
 
   def update_message(%Message{} = message, attrs) do
