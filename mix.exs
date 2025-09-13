@@ -42,6 +42,7 @@ defmodule Shop.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.26"},
       {:httpoison, "~> 2.2"},
+      {:open_api_spex, "~> 3.18"},
       {:jason, "~> 1.2"},
       {:finch, "~> 0.16"},
       {:dns_cluster, "~> 0.2.0"},

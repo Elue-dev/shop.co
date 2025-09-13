@@ -23,6 +23,7 @@ defmodule ShopWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json", "multipart"]
+    plug OpenApiSpex.Plug.PutApiSpec, module: ShopWeb.ApiSpec
     plug :fetch_session
     plug :put_secure_browser_headers
   end
@@ -41,8 +42,22 @@ defmodule ShopWeb.Router do
     plug ShopWeb.Plugs.ValidateUUID
   end
 
-  scope "/", ShopWeb do
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :put_root_layout, html: {ShopWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
+  scope "/" do
+    pipe_through :browser
+    get "/swaggerui", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
+  end
+
+  scope "/api" do
     pipe_through :api
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
   end
 
   scope "/", ShopWeb do
@@ -153,7 +168,6 @@ defmodule ShopWeb.Router do
 
     scope "/coupons" do
       get "/", Coupon.CouponController, :list
-
       post "/", Coupon.CouponController, :create
     end
   end

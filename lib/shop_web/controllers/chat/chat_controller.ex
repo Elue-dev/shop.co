@@ -42,8 +42,6 @@ defmodule ShopWeb.Chat.ChatController do
   end
 
   def show(conn, %{"id" => id}) do
-    IO.puts("IDDDDDD: #{id}")
-
     case Chats.get_chat(id) do
       nil -> {:error, :chat_not_found}
       chat -> render(conn, :show, chat: chat)
