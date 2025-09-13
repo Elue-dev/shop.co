@@ -13,7 +13,7 @@ defmodule Shop.Chats.Messages do
     )
   end
 
-  def get_message!(id), do: Repo.get!(Message, id)
+  def get_message(id), do: Repo.get(Message, id)
 
   def create_message(attrs) do
     %Message{}
