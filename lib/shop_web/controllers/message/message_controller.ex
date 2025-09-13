@@ -38,11 +38,6 @@ defmodule ShopWeb.Message.MessageController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    message = Messages.get_message!(id)
-    render(conn, :show, message: message)
-  end
-
   def update(conn, %{"id" => id, "message" => message_params}) do
     message = Messages.get_message!(id)
 
