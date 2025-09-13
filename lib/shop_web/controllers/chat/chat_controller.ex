@@ -54,20 +54,16 @@ defmodule ShopWeb.Chat.ChatController do
   end
 
   def show(conn, %{"id" => id}) do
-    chat = Chats.get_chat!(id)
-    render(conn, :show, chat: chat)
-  end
+    IO.puts("IDDDDDD: #{id}")
 
-  def update(conn, %{"id" => id, "chat" => chat_params}) do
-    chat = Chats.get_chat!(id)
-
-    with {:ok, %Chat{} = chat} <- Chats.update_chat(chat, chat_params) do
-      render(conn, :show, chat: chat)
+    case Chats.get_chat(id) do
+      nil -> {:error, :chat_not_found}
+      chat -> render(conn, :show, chat: chat)
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    chat = Chats.get_chat!(id)
+    chat = Chats.get_chat(id)
 
     with {:ok, %Chat{}} <- Chats.delete_chat(chat) do
       send_resp(conn, :no_content, "")

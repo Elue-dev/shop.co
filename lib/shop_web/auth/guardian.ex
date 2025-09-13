@@ -38,6 +38,19 @@ defmodule ShopWeb.Auth.Guardian do
     token
   end
 
+  def verify_user_token(token) do
+    case decode_and_verify(token, %{}) do
+      {:ok, claims} ->
+        case resource_from_claims(claims) do
+          {:ok, account} -> {:ok, account}
+          {:error, _} -> :error
+        end
+
+      {:error, _} ->
+        :error
+    end
+  end
+
   def validate_password(password, hash_password) do
     Bcrypt.verify_pass(password, hash_password)
   end

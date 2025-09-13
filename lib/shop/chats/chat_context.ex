@@ -13,7 +13,14 @@ defmodule Shop.Chats do
     )
   end
 
-  def get_chat(id), do: Repo.get(Chat, id)
+  def get_chat(id) do
+    from(c in Chat,
+      where: c.id == ^id,
+      left_join: m in assoc(c, :last_message),
+      preload: [last_message: m, user1: [], user2: []]
+    )
+    |> Repo.one()
+  end
 
   def create_chat(attrs) do
     %Chat{}

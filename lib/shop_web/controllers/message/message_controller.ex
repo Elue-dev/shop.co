@@ -4,6 +4,7 @@ defmodule ShopWeb.Message.MessageController do
   alias Shop.Chats
   alias Shop.Chats.Messages
   alias Shop.Schema.Message
+  alias ShopWeb.Events.SocketHandlers
 
   action_fallback ShopWeb.FallbackController
 
@@ -23,6 +24,8 @@ defmodule ShopWeb.Message.MessageController do
         if chat.user1_id == conn.assigns.account.user.id ||
              chat.user2_id == conn.assigns.account.user.id do
           with {:ok, %Message{} = message} <- Messages.create_message(params) do
+            publish_message(chat.id, message)
+
             conn
             |> put_status(:created)
             |> render(:show, message: message)
@@ -54,5 +57,23 @@ defmodule ShopWeb.Message.MessageController do
     with {:ok, %Message{}} <- Messages.delete_message(message) do
       send_resp(conn, :no_content, "")
     end
+  end
+
+  defp publish_message(chat_id, message) do
+    SocketHandlers.publish_message(%{
+      chat_id: chat_id,
+      message: %{
+        id: message.id,
+        content: message.content,
+        sender: %{
+          id: message.sender.id,
+          first_name: message.sender.first_name,
+          last_name: message.sender.last_name,
+          email: message.sender.email
+        },
+        read_at: message.read_at,
+        inserted_at: message.inserted_at
+      }
+    })
   end
 end

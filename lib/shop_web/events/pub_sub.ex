@@ -6,10 +6,10 @@ defmodule ShopWeb.Events.PubSub do
         new: "new_product"
       }
     },
-    chat: %{
-      topic: "chat:lobby",
+    message: %{
+      topic: "message:lobby",
       events: %{
-        message: "new_message",
+        new: "new_message",
         typing: "typing"
       }
     }

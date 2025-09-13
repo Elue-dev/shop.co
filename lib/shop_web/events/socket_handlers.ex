@@ -9,4 +9,14 @@ defmodule ShopWeb.Events.SocketHandlers do
       payload
     )
   end
+
+  def publish_message(payload) do
+    chat_id = payload[:chat_id]
+
+    Broadcaster.broadcast(
+      "chat:#{chat_id}",
+      PubSub.all().message.events.new,
+      payload[:message]
+    )
+  end
 end
