@@ -150,7 +150,7 @@ defmodule ShopWeb.Router do
     pipe_through [:api, :auth, :uuid_check]
 
     scope "/chats" do
-      get "/:id", Chat.ChatController, :show
+      get "/:id", Chat.ChatController, :get
       get "/:id/messages", Message.MessageController, :list
     end
   end
