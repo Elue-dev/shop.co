@@ -1,12 +1,31 @@
 defmodule ShopWeb.User.UserController do
   use ShopWeb, :controller
+  use OpenApiSpex.ControllerSpecs
 
   alias Shop.{Repo, Users, Mailer, Emails}
   alias Shop.Schema.PasswordResetToken
 
+  alias ShopWeb.Schemas.User.{
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    MessageResponse,
+    ErrorResponse
+  }
+
   import Ecto.Query, warn: false
 
   action_fallback ShopWeb.FallbackController
+
+  operation(:forgot_password,
+    summary: "Request password reset",
+    description:
+      "Send password reset email to user. Always returns success message for security.",
+    request_body: {"Password reset request", "application/json", ForgotPasswordRequest},
+    responses: [
+      ok: {"Reset email sent", "application/json", MessageResponse}
+    ],
+    tags: ["Authentication"]
+  )
 
   def forgot_password(conn, %{"email" => email}) do
     case Users.get_user_by_email(email) do
@@ -27,6 +46,20 @@ defmodule ShopWeb.User.UserController do
   def forgot_password(_conn, _params) do
     {:error, :bad_request}
   end
+
+  operation(:reset_password,
+    summary: "Reset password",
+    description: "Reset user password using reset token from email",
+    request_body: {"Password reset data", "application/json", ResetPasswordRequest},
+    responses: [
+      ok: {"Password reset successful", "application/json", MessageResponse},
+      bad_request: {"Invalid request", "application/json", ErrorResponse},
+      not_found: {"User not found", "application/json", ErrorResponse},
+      unprocessable_entity:
+        {"Password mismatch or invalid/expired token", "application/json", ErrorResponse}
+    ],
+    tags: ["Authentication"]
+  )
 
   def reset_password(conn, %{
         "email" => email,
