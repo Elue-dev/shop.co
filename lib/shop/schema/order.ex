@@ -10,6 +10,7 @@ defmodule Shop.Schema.Order do
              :id,
              :payment_status,
              :total_amount,
+             :discount_amount,
              :shipping_address,
              :billing_address,
              :payment_method,
@@ -29,6 +30,7 @@ defmodule Shop.Schema.Order do
   schema "orders" do
     field :payment_status, Ecto.Enum, values: @payment_statuses, default: :pending
     field :total_amount, :decimal
+    field :discount_amount, :decimal, default: 0
     field :payment_method, Ecto.Enum, values: @payment_methods
     field :placed_at, :utc_datetime_usec
 
@@ -50,6 +52,7 @@ defmodule Shop.Schema.Order do
       :user_id,
       :payment_status,
       :total_amount,
+      :discount_amount,
       :payment_method,
       :placed_at,
       :coupon_id
@@ -80,9 +83,11 @@ defmodule Shop.Schema.Order do
         |> Enum.map(&subtotal_from_item_param/1)
         |> Enum.reduce(Decimal.new(0), &Decimal.add/2)
 
-      final_total = apply_coupon_discount(subtotal, attrs)
+      {final_total, discount_amount} = apply_coupon_discount(subtotal, attrs)
 
-      put_change(changeset, :total_amount, final_total)
+      changeset
+      |> put_change(:total_amount, final_total)
+      |> put_change(:discount_amount, discount_amount)
     else
       changeset
     end
@@ -96,14 +101,16 @@ defmodule Shop.Schema.Order do
           |> Decimal.mult(Decimal.new(discount))
           |> Decimal.div(Decimal.new(100))
 
-        Decimal.sub(subtotal, discount_amount)
+        final_total = Decimal.sub(subtotal, discount_amount)
+        {final_total, discount_amount}
 
       _ ->
-        subtotal
+        {subtotal, Decimal.new(0)}
     end
   end
 
-  defp apply_coupon_discount(subtotal, _attrs), do: subtotal
+  defp apply_coupon_discount(subtotal, _attrs),
+    do: {subtotal, Decimal.new(0)}
 
   defp subtotal_from_item_param(%{"unit_price" => up, "quantity" => q}),
     do: multiply_unit_qty(up, q)

@@ -14,6 +14,7 @@ defmodule ShopWeb.Order.OrderJSON do
       id: order.id,
       payment_status: order.payment_status,
       total_amount: order.total_amount,
+      discount_amount: order.discount_amount,
       shipping_address: order.shipping_address,
       billing_address: order.billing_address,
       payment_method: order.payment_method,
