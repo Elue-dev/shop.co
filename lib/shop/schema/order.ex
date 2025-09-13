@@ -62,6 +62,10 @@ defmodule Shop.Schema.Order do
       :billing_address,
       :payment_method
     ])
+    |> foreign_key_constraint(:coupon_id,
+      name: :orders_coupon_id_fkey,
+      message: "coupon not found"
+    )
     |> put_change(:placed_at, DateTime.utc_now())
     |> compute_total_amount_from_items(attrs)
   end

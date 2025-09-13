@@ -16,10 +16,8 @@ defmodule ShopWeb.Order.OrderController do
   end
 
   def place(conn, params) do
-    user_id = conn.assigns.account.user.id
-
     params =
-      params |> Map.put("user_id", user_id)
+      params |> Map.put("user_id", conn.assigns.account.user.id)
 
     with {:ok, %Order{} = order} <- Orders.create_order(params) do
       conn
