@@ -48,7 +48,7 @@ defmodule ShopWeb.Product.ProductController do
     params = params |> Map.put("images", image_urls)
 
     with {:ok, %Product{} = product} <- Shop.Products.create_product(params) do
-      SocketHandlers.publish_product(:add, %{name: product.name})
+      SocketHandlers.publish_product(%{name: product.name})
 
       conn
       |> put_status(:created)

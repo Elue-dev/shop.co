@@ -124,6 +124,15 @@ defmodule ShopWeb.Router do
   scope "/", ShopWeb do
     pipe_through [:api, :auth]
 
+    scope "/chats" do
+      post "/", Chat.ChatController, :create
+      get "/", Chat.ChatController, :list
+    end
+  end
+
+  scope "/", ShopWeb do
+    pipe_through [:api, :auth]
+
     scope "/payment_method" do
       post "/", PaymentSessionController, :create_and_confirm_payment_session
     end
