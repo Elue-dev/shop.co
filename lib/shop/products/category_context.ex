@@ -1,8 +1,4 @@
 defmodule Shop.Products.Categories do
-  @moduledoc """
-  The Products context.
-  """
-
   import Ecto.Query, warn: false
   alias Shop.Repo
 

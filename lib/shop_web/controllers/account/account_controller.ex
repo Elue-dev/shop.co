@@ -12,7 +12,6 @@ defmodule ShopWeb.Account.AccountController do
     VerifyAccountRequest,
     SendVerificationRequest,
     AccountResponse,
-    AccountExpandedResponse,
     LoginResponse,
     MessageResponse,
     ErrorResponse
