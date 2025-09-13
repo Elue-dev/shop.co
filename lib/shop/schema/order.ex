@@ -1,7 +1,8 @@
 defmodule Shop.Schema.Order do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Shop.Schema.{OrderItem, Address}
+  alias Shop.Schema.{OrderItem, Address, Coupon}
+  alias Shop.Repo
   alias Decimal
 
   @derive {Jason.Encoder,
@@ -74,16 +75,35 @@ defmodule Shop.Schema.Order do
     items = Map.get(attrs, "order_items", [])
 
     if is_list(items) and length(items) > 0 do
-      total =
+      subtotal =
         items
         |> Enum.map(&subtotal_from_item_param/1)
         |> Enum.reduce(Decimal.new(0), &Decimal.add/2)
 
-      put_change(changeset, :total_amount, total)
+      final_total = apply_coupon_discount(subtotal, attrs)
+
+      put_change(changeset, :total_amount, final_total)
     else
       changeset
     end
   end
+
+  defp apply_coupon_discount(subtotal, %{"coupon_id" => coupon_id}) when not is_nil(coupon_id) do
+    case Repo.get(Coupon, coupon_id) do
+      %{percentage_discount: discount, active: true} ->
+        discount_amount =
+          subtotal
+          |> Decimal.mult(Decimal.new(discount))
+          |> Decimal.div(Decimal.new(100))
+
+        Decimal.sub(subtotal, discount_amount)
+
+      _ ->
+        subtotal
+    end
+  end
+
+  defp apply_coupon_discount(subtotal, _attrs), do: subtotal
 
   defp subtotal_from_item_param(%{"unit_price" => up, "quantity" => q}),
     do: multiply_unit_qty(up, q)
