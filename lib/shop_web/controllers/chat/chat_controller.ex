@@ -39,18 +39,6 @@ defmodule ShopWeb.Chat.ChatController do
         |> put_status(:unprocessable_entity)
         |> json(%{error: inspect(reason)})
     end
-
-    case Users.get_user(user2_id) do
-      nil ->
-        {:error, :user_not_found}
-
-      _user ->
-        with {:ok, %Chat{} = chat} <- Chats.create_chat(params) do
-          conn
-          |> put_status(:created)
-          |> render(:show, chat: chat)
-        end
-    end
   end
 
   def show(conn, %{"id" => id}) do

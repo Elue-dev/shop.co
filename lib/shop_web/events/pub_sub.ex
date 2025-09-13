@@ -7,7 +7,6 @@ defmodule ShopWeb.Events.PubSub do
       }
     },
     message: %{
-      topic: "message:lobby",
       events: %{
         new: "new_message",
         typing: "typing"
