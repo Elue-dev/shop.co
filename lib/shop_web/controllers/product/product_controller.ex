@@ -4,6 +4,7 @@ defmodule ShopWeb.Product.ProductController do
   alias Shop.Schema.Product
   alias Shop.Products
   alias Shop.Helpers.{ImageUploader, ProductFilters}
+  alias ShopWeb.Events.SocketHandlers
 
   action_fallback ShopWeb.FallbackController
 
@@ -47,6 +48,8 @@ defmodule ShopWeb.Product.ProductController do
     params = params |> Map.put("images", image_urls)
 
     with {:ok, %Product{} = product} <- Shop.Products.create_product(params) do
+      SocketHandlers.publish_product(:add, %{name: product.name})
+
       conn
       |> put_status(:created)
       |> render(:show, product: product)

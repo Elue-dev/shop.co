@@ -1,12 +1,5 @@
 defmodule ShopWeb.Events.PubSub do
   @pubsub %{
-    category: %{
-      topic: "category:lobby",
-      events: %{
-        new: "new_category",
-        delete: "delete_category"
-      }
-    },
     product: %{
       topic: "product:lobby",
       events: %{
