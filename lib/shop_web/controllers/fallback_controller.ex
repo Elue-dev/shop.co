@@ -30,7 +30,7 @@ defmodule ShopWeb.FallbackController do
   def call(conn, {:error, :forbidden}) do
     conn
     |> put_status(:forbidden)
-    |> json(%{error: "Forbidden"})
+    |> json(%{error: "forbidden"})
   end
 
   def call(conn, {:error, :invalid_password}) do
