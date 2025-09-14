@@ -152,6 +152,8 @@ defmodule ShopWeb.Router do
     scope "/chats" do
       get "/:id", Chat.ChatController, :get
       get "/:id/messages", Message.MessageController, :list
+      patch "/:id/messages/:message_id", Message.MessageController, :update
+      delete "/:id/messages/:message_id", Message.MessageController, :delete
     end
   end
 

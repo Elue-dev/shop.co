@@ -29,6 +29,10 @@ defmodule Shop.Chats.Messages do
     message
     |> Message.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, message} -> {:ok, Repo.preload(message, [:sender])}
+      error -> error
+    end
   end
 
   def delete_message(%Message{} = message) do

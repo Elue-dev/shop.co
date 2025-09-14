@@ -4,7 +4,7 @@ defmodule ShopWeb.Message.MessageController do
 
   alias Shop.Chats
   alias Shop.Chats.Messages
-  alias Shop.Schema.Message
+  alias Shop.Schema.{Message, Chat}
   alias ShopWeb.Events.SocketHandlers
 
   alias ShopWeb.Schemas.Message.{
@@ -94,21 +94,37 @@ defmodule ShopWeb.Message.MessageController do
     request_body: {"Message data", "application/json", CreateMessageRequest},
     responses: [
       ok: {"Message updated successfully", "application/json", MessageResponse},
-      not_found: {"Message not found", "application/json", ErrorResponse}
+      not_found: {"Chat or Message not found", "application/json", ErrorResponse}
     ],
     tags: ["Chats"]
   )
 
-  def update(conn, %{"id" => id, "message" => message_params}) do
-    case Messages.get_message(id) do
+  def update(conn, %{"id" => id, "message_id" => message_id, "content" => content}) do
+    with %Chat{} <- Chats.get_chat(id),
+         %Message{} = message <- Messages.get_message(message_id),
+         {:ok, %Message{} = updated_message} <-
+           Messages.update_message(message, %{content: content}) do
+      render(conn, :show, message: updated_message)
+    else
       nil ->
-        {:error, :item_not_found}
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "chat or message not found"})
 
-      message ->
-        with {:ok, %Message{} = message} <- Messages.update_message(message, message_params) do
-          render(conn, :show, message: message)
-        end
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: changeset})
+
+      _ ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "internal server error"})
     end
+  end
+
+  def update(_conn, _params) do
+    {:error, :bad_request}
   end
 
   operation(:delete,
@@ -125,20 +141,31 @@ defmodule ShopWeb.Message.MessageController do
     ],
     responses: [
       no_content: {"Message deleted", "application/json", nil},
-      not_found: {"Message not found", "application/json", ErrorResponse}
+      not_found: {"Chat or Message not found", "application/json", ErrorResponse}
     ],
     tags: ["Chats"]
   )
 
-  def delete(conn, %{"id" => id}) do
-    case Messages.get_message(id) do
+  def delete(conn, %{"id" => id, "message_id" => message_id}) do
+    with %Chat{} <- Chats.get_chat(id),
+         %Message{} = message <- Messages.get_message(message_id),
+         {:ok, %Message{}} <- Messages.delete_message(message) do
+      send_resp(conn, :no_content, "")
+    else
       nil ->
-        {:error, :item_not_found}
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "chat or message not found"})
 
-      message ->
-        with {:ok, %Message{}} <- Messages.delete_message(message) do
-          send_resp(conn, :no_content, "")
-        end
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: changeset})
+
+      _ ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "internal server error"})
     end
   end
 
