@@ -23,6 +23,7 @@ defmodule ShopWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json", "multipart"]
+
     plug OpenApiSpex.Plug.PutApiSpec, module: ShopWeb.ApiSpec
     plug :fetch_session
     plug :put_secure_browser_headers

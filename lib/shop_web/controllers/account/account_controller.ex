@@ -110,28 +110,27 @@ defmodule ShopWeb.Account.AccountController do
     tags: ["Account Verification"]
   )
 
-  def verify_and_activate_account(conn, %{"id" => id, "token" => token}) do
-    account = Accounts.get_account_expanded!(id)
-
-    cond do
-      account == nil ->
+  def verify_and_activate_account(conn, %{"id" => id, "token" => token})
+      when id != "" and token != "" do
+    case Accounts.get_account(id) do
+      nil ->
         {:error, :account_not_found}
 
-      account.status == :active ->
-        {:error, :already_active}
+      account ->
+        if account.status == :active do
+          {:error, :already_active}
+        else
+          case activate_account_action(account, token) do
+            {:ok, account} ->
+              conn
+              |> put_status(:ok)
+              |> render(:show_expanded, account: account)
 
-      true ->
-        case activate_account_action(account, token) do
-          {:ok, _account} ->
-            conn |> json(%{message: "account successfully activated"})
-
-          {:error, :invalid_token} ->
-            {:error, :invalid_or_expired}
+            {:error, :invalid_token} ->
+              {:error, :invalid_or_expired}
+          end
         end
     end
-  rescue
-    Ecto.NoResultsError ->
-      conn |> json(%{message: "account not found"})
   end
 
   def verify_and_activate_account(_, _) do

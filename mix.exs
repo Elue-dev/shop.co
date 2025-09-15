@@ -45,6 +45,7 @@ defmodule Shop.MixProject do
       {:open_api_spex, "~> 3.18"},
       {:jason, "~> 1.2"},
       {:finch, "~> 0.16"},
+      {:corsica, "~> 1.3"},
       {:dns_cluster, "~> 0.2.0"},
       {:guardian, "~> 2.4"},
       {:bcrypt_elixir, "~> 3.3"},

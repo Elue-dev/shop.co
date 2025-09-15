@@ -23,6 +23,13 @@ defmodule ShopWeb.Endpoint do
     gzip: not code_reloading?,
     only: ShopWeb.static_paths()
 
+  plug Corsica,
+    origins: ["http://localhost:3000"],
+    allow_credentials: true,
+    allow_headers: ~w(accept accept-language authorization content-type  responsetype),
+    allow_methods: ~w(HEAD GET POST PATCH PUT DELETE),
+    max_age: 86400
+
   socket "/socket", ShopWeb.UserSocket,
     websocket: true,
     longpoll: false

@@ -39,7 +39,6 @@ defmodule Shop.Schema.User do
     |> validate_required([
       :email,
       :password,
-      :phone,
       :first_name,
       :last_name,
       :tag

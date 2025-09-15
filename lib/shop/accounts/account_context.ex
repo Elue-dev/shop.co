@@ -8,7 +8,10 @@ defmodule Shop.Accounts do
     Repo.all(Account)
   end
 
-  def get_account!(id), do: Repo.get!(Account, id)
+  def get_account(id) do
+    Repo.get(Account, id)
+    |> Repo.preload([:user])
+  end
 
   def get_account_expanded!(id) do
     Account
