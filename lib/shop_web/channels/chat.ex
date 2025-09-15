@@ -1,11 +1,10 @@
 defmodule ShopWeb.Channels.Chat do
   use ShopWeb, :channel
+
   alias Shop.Chats
   alias Shop.Chats.Messages
 
   def join("chat:" <> chat_id, _payload, socket) do
-    IO.inspect(socket.assigns[:current_user], label: "Current user on join")
-
     case socket.assigns[:current_user] do
       nil ->
         {:error, %{reason: "unauthenticated"}}
@@ -54,6 +53,18 @@ defmodule ShopWeb.Channels.Chat do
       end
     end)
 
-    {:reply, {:ok, %{status: "sent"}}, socket}
+    {:reply, {:ok, %{status: "message sent"}}, socket}
+  end
+
+  def handle_in("typing", %{"typing" => typing}, socket) do
+    account = socket.assigns.current_user
+
+    broadcast_from!(socket, "typing", %{
+      user_id: account.user.id,
+      first_name: account.user.first_name,
+      typing: typing
+    })
+
+    {:noreply, socket}
   end
 end
