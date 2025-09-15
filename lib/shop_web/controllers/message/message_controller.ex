@@ -4,7 +4,7 @@ defmodule ShopWeb.Message.MessageController do
 
   alias Shop.Chats
   alias Shop.Chats.Messages
-  alias Shop.Schema.{Message, Chat}
+  alias Shop.Schema.Message
   alias ShopWeb.Events.SocketHandlers
 
   alias ShopWeb.Schemas.Message.{
@@ -36,6 +36,7 @@ defmodule ShopWeb.Message.MessageController do
   )
 
   def list(conn, %{"id" => id} = _params) do
+    IO.puts(inspect(id))
     messages = Messages.list_messages(id)
     render(conn, :index, messages: messages)
   end

@@ -1,20 +1,24 @@
 defmodule ShopWeb.Plugs.SetAccount do
   import Plug.Conn
-  alias Shop.Accounts
+  alias ShopWeb.Auth.Guardian
 
-  def init(_opts) do
-  end
+  def init(_opts), do: []
 
   def call(conn, _opts) do
-    if conn.assigns[:account], do: conn |> halt()
+    if conn.assigns[:account], do: halt(conn)
 
-    account_id = conn |> get_session(:account_id)
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> token] ->
+        case Guardian.verify_user_token(token) do
+          {:ok, account} ->
+            assign(conn, :account, account)
 
-    account = Accounts.get_account_expanded!(account_id)
+          :error ->
+            assign(conn, :account, nil)
+        end
 
-    cond do
-      account_id && account -> conn |> assign(:account, account)
-      true -> conn |> assign(:account, nil)
+      _ ->
+        assign(conn, :account, nil)
     end
   end
 end

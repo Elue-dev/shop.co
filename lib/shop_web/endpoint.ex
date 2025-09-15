@@ -24,7 +24,7 @@ defmodule ShopWeb.Endpoint do
     only: ShopWeb.static_paths()
 
   plug Corsica,
-    origins: ["http://localhost:3000"],
+    origins: ["http://localhost:3000", "http://localhost:5000"],
     allow_credentials: true,
     allow_headers: ~w(accept accept-language authorization content-type  responsetype),
     allow_methods: ~w(HEAD GET POST PATCH PUT DELETE),
