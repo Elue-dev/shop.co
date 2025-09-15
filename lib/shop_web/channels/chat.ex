@@ -1,8 +1,11 @@
 defmodule ShopWeb.Channels.Chat do
   use ShopWeb, :channel
   alias Shop.Chats
+  alias Shop.Chats.Messages
 
   def join("chat:" <> chat_id, _payload, socket) do
+    IO.inspect(socket.assigns[:current_user], label: "Current user on join")
+
     case socket.assigns[:current_user] do
       nil ->
         {:error, %{reason: "unauthenticated"}}
@@ -20,5 +23,37 @@ defmodule ShopWeb.Channels.Chat do
             end
         end
     end
+  end
+
+  def handle_in("new_message", %{"content" => content}, socket) do
+    account = socket.assigns.current_user
+    chat_id = socket.assigns.chat_id
+
+    temp_message = %{
+      id: Ecto.UUID.generate(),
+      content: content,
+      sender: %{
+        id: account.user.id,
+        first_name: account.user.first_name,
+        last_name: account.user.last_name
+      },
+      inserted_at: DateTime.utc_now(),
+      read_at: nil
+    }
+
+    broadcast!(socket, "new_message", %{data: temp_message})
+
+    Task.start(fn ->
+      case Messages.create_message(%{
+             chat_id: chat_id,
+             content: content,
+             sender_id: account.user.id
+           }) do
+        {:ok, _message} -> :ok
+        {:error, _} -> IO.puts("Failed to save message")
+      end
+    end)
+
+    {:reply, {:ok, %{status: "sent"}}, socket}
   end
 end
