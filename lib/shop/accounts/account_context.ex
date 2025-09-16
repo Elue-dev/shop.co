@@ -8,6 +8,12 @@ defmodule Shop.Accounts do
     Repo.all(Account)
   end
 
+  def list_sellers() do
+    Account
+    |> where(type: :seller)
+    |> Repo.all()
+  end
+
   def get_account(id) do
     Repo.get(Account, id)
     |> Repo.preload([:user])

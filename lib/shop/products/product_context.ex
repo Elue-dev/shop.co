@@ -11,9 +11,9 @@ defmodule Shop.Products do
     base_query =
       Product
       |> ProductQueryBuilder.build_query(filters)
-      |> join(:left, [p], r in assoc(p, :reviews))
+      |> join(:left, [p], r in assoc(p, :reviews), as: :reviews)
       |> group_by([p], p.id)
-      |> select_merge([p, r], %{avg_rating: avg(r.rating)})
+      |> select_merge([p, reviews: r], %{avg_rating: avg(r.rating)})
       |> order_by([p], desc: p.inserted_at, desc: p.id)
 
     query =

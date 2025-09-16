@@ -161,6 +161,30 @@ defmodule ShopWeb.Account.AccountController do
     render(conn, :index, accounts: accounts)
   end
 
+  operation(:list_sellers,
+    summary: "List all seller accounts",
+    description: "Get a list of all seller accounts on the platform",
+    responses: [
+      ok:
+        {"List of seller accounts", "application/json",
+         %OpenApiSpex.Schema{
+           type: :object,
+           properties: %{
+             data: %OpenApiSpex.Schema{
+               type: :array,
+               items: AccountResponse
+             }
+           }
+         }}
+    ],
+    tags: ["Accounts"]
+  )
+
+  def list_sellers(conn, _params) do
+    accounts = Accounts.list_sellers()
+    render(conn, :index, accounts: accounts)
+  end
+
   defp authorize_account(conn, email, password, context \\ :login, user \\ nil) do
     case Guardian.authenticate(email, password) do
       {:ok, account, token} ->

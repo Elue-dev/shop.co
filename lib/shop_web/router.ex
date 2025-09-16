@@ -79,6 +79,14 @@ defmodule ShopWeb.Router do
   scope "/", ShopWeb do
     pipe_through :api
 
+    scope "/accounts" do
+      get "/sellers", Account.AccountController, :list_sellers
+    end
+  end
+
+  scope "/", ShopWeb do
+    pipe_through :api
+
     scope "/products" do
       get "/", Product.ProductController, :list_products
       get "/categories", Category.CategoryController, :list_categories
