@@ -15,7 +15,9 @@ defmodule ShopWeb.Chat.ChatJSON do
       last_message_at: chat.last_message_at,
       last_message: message_data(chat.last_message),
       user1: user_data(chat.user1),
-      user2: user_data(chat.user2)
+      user2: user_data(chat.user2),
+      inserted_at: chat.inserted_at,
+      updated_at: chat.updated_at
     }
   end
 

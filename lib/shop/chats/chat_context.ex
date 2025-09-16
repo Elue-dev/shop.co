@@ -9,6 +9,7 @@ defmodule Shop.Chats do
       from c in Chat,
         where: c.user1_id == ^user_id or c.user2_id == ^user_id,
         left_join: m in assoc(c, :last_message),
+        order_by: [desc: m.updated_at],
         preload: [last_message: m, user1: [], user2: []]
     )
   end
