@@ -124,7 +124,7 @@ defmodule ShopWeb.Account.AccountController do
             {:ok, account} ->
               conn
               |> put_status(:ok)
-              |> render(:show_expanded, account: account)
+              |> render(:show, account: account)
 
             {:error, :invalid_token} ->
               {:error, :invalid_or_expired}
@@ -158,7 +158,7 @@ defmodule ShopWeb.Account.AccountController do
 
   def index(conn, _params) do
     accounts = Accounts.list_accounts()
-    render(conn, :index, accounts: accounts)
+    render(conn, :show, accounts: accounts)
   end
 
   operation(:list_sellers,
@@ -197,7 +197,7 @@ defmodule ShopWeb.Account.AccountController do
         conn
         |> Plug.Conn.put_session(:account_id, account.id)
         |> put_status(:ok)
-        |> render(:show_expanded, account: account_expanded, token: token)
+        |> render(:show, account: account_expanded, token: token)
 
       {:error, _reason} ->
         {:error, :unauthorized}

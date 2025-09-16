@@ -199,7 +199,7 @@ defmodule ShopWeb.Schemas.Account do
         },
         type: %Schema{
           type: :string,
-          enum: ["buyer", "seller"],
+          enum: ["seller", "buyer"],
           description: "Account type"
         },
         status: %Schema{

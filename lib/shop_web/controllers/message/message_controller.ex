@@ -66,6 +66,7 @@ defmodule ShopWeb.Message.MessageController do
         if chat.user1_id == conn.assigns.account.user.id ||
              chat.user2_id == conn.assigns.account.user.id do
           with {:ok, %Message{} = message} <- Messages.create_message(params) do
+            Chats.update_last_message(chat.id, message.id, message.inserted_at)
             publish_message(chat.id, message)
 
             conn

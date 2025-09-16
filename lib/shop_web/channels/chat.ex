@@ -48,8 +48,20 @@ defmodule ShopWeb.Channels.Chat do
              content: content,
              sender_id: account.user.id
            }) do
-        {:ok, _message} -> :ok
-        {:error, _} -> IO.puts("Failed to save message")
+        {:ok, message} ->
+          case Chats.get_chat(chat_id) do
+            nil ->
+              IO.puts("Chat not found for ID: #{chat_id}")
+
+            chat ->
+              Chats.update_chat(chat, %{
+                last_message_id: message.id,
+                last_message_at: message.inserted_at
+              })
+          end
+
+        {:error, reason} ->
+          IO.puts("Failed to save message: #{inspect(reason)}")
       end
     end)
 

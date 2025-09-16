@@ -34,6 +34,17 @@ defmodule Shop.Chats do
     |> Repo.update()
   end
 
+  def update_last_message(chat_id, message_id, message_timestamp) do
+    from(c in Chat, where: c.id == ^chat_id)
+    |> Repo.update_all(
+      set: [
+        last_message_id: message_id,
+        last_message_at: message_timestamp,
+        updated_at: DateTime.utc_now()
+      ]
+    )
+  end
+
   def delete_chat(%Chat{} = chat) do
     Repo.delete(chat)
   end

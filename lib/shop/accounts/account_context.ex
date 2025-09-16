@@ -4,13 +4,16 @@ defmodule Shop.Accounts do
 
   alias Shop.Schema.Account
 
-  def list_accounts do
-    Repo.all(Account)
+  def list_accounts() do
+    Account
+    |> preload([:user])
+    |> Repo.all()
   end
 
   def list_sellers() do
     Account
     |> where(type: :seller)
+    |> preload([:user])
     |> Repo.all()
   end
 
