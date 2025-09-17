@@ -43,15 +43,29 @@ defmodule ShopWeb.Chat.ChatController do
   )
 
   def create(conn, params) do
-    params = params |> Map.put("user1_id", conn.assigns.account.user.id)
+    user1_id = conn.assigns.account.user.id
+    params = params |> Map.put("user1_id", user1_id)
     user2_id = Map.get(params, "user2_id")
 
     with {:ok, _uuid} <- Ecto.UUID.cast(user2_id),
          %User{} = _user <- Users.get_user(user2_id),
-         {:ok, %Chat{} = chat} <- Chats.create_chat(params) do
-      conn
-      |> put_status(:created)
-      |> render(:show, chat: chat)
+         chat_result <- find_or_create_chat(user1_id, user2_id, params) do
+      case chat_result do
+        {:existing, chat} ->
+          conn
+          |> put_status(:ok)
+          |> render(:show, chat: chat)
+
+        {:created, chat} ->
+          conn
+          |> put_status(:created)
+          |> render(:show, chat: chat)
+
+        {:error, reason} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: inspect(reason)})
+      end
     else
       :error ->
         conn
@@ -64,11 +78,6 @@ defmodule ShopWeb.Chat.ChatController do
         |> put_status(:not_found)
         |> json(%{error: "user not found"})
         |> halt()
-
-      {:error, reason} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: inspect(reason)})
     end
   end
 
@@ -95,6 +104,19 @@ defmodule ShopWeb.Chat.ChatController do
     case Chats.get_chat(id) do
       nil -> {:error, :chat_not_found}
       chat -> render(conn, :show, chat: chat)
+    end
+  end
+
+  defp find_or_create_chat(user1_id, user2_id, params) do
+    case Chats.find_existing_chat(user1_id, user2_id) do
+      %Chat{} = chat ->
+        {:existing, chat}
+
+      nil ->
+        case Chats.create_chat(params) do
+          {:ok, chat} -> {:created, chat}
+          {:error, reason} -> {:error, reason}
+        end
     end
   end
 end

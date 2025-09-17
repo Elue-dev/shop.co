@@ -57,4 +57,16 @@ defmodule Shop.Chats do
   def delete_chat(%Chat{} = chat) do
     Repo.delete(chat)
   end
+
+  def find_existing_chat(user1_id, user2_id) do
+    Chat
+    |> where(
+      [c],
+      (c.user1_id == ^user1_id and c.user2_id == ^user2_id) or
+        (c.user1_id == ^user2_id and c.user2_id == ^user1_id)
+    )
+    |> preload([:user2, :user1, :last_message])
+    |> limit(1)
+    |> Repo.one()
+  end
 end
