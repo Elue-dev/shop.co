@@ -24,7 +24,7 @@ defmodule ShopWeb.Channels.Chat do
     end
   end
 
-  def handle_in("new_message", %{"content" => content}, socket) do
+  def handle_in("new_message", %{"content" => content, "chat_details" => chat_details}, socket) do
     account = socket.assigns.current_user
     chat_id = socket.assigns.chat_id
 
@@ -37,10 +37,11 @@ defmodule ShopWeb.Channels.Chat do
         last_name: account.user.last_name
       },
       inserted_at: DateTime.utc_now(),
-      read_at: nil
+      read_at: nil,
+      chat_id: chat_id
     }
 
-    broadcast!(socket, "new_message", %{data: temp_message})
+    broadcast!(socket, "new_message", %{data: temp_message, chat_details: chat_details})
 
     Task.start(fn ->
       case Messages.create_message(%{

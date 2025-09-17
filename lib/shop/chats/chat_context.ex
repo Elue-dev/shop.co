@@ -27,6 +27,14 @@ defmodule Shop.Chats do
     %Chat{}
     |> Chat.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, chat} ->
+        chat = Repo.preload(chat, [:last_message, :user1, :user2])
+        {:ok, chat}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   def update_chat(%Chat{} = chat, attrs) do
