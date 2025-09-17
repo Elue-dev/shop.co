@@ -127,6 +127,13 @@ defmodule ShopWeb.Router do
   end
 
   scope "/", ShopWeb do
+    pipe_through [:api, :auth, :admin]
+
+    get "/admin/cache/stats", CacheController, :cache_stats
+    post "/admin/cache/clear", CacheController, :clear_cache
+  end
+
+  scope "/", ShopWeb do
     pipe_through [:api, :auth, :uuid_check]
 
     scope "/products" do

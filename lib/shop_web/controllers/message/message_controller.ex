@@ -1,20 +1,12 @@
 defmodule ShopWeb.Message.MessageController do
   use ShopWeb, :controller
   use OpenApiSpex.ControllerSpecs
+  require Logger
 
   alias Shop.Chats
   alias Shop.Chats.Messages
   alias Shop.Schema.Message
   alias ShopWeb.Events.SocketHandlers
-
-  alias ShopWeb.Schemas.Message.{
-    CreateMessageRequest,
-    MessageResponse,
-    MessagesListResponse,
-    ErrorResponse
-  }
-
-  action_fallback ShopWeb.FallbackController
 
   operation(:list,
     summary: "List chat messages",
@@ -36,7 +28,6 @@ defmodule ShopWeb.Message.MessageController do
   )
 
   def list(conn, %{"id" => id} = _params) do
-    IO.puts(inspect(id))
     messages = Messages.list_messages(id)
     render(conn, :index, messages: messages)
   end
@@ -57,14 +48,14 @@ defmodule ShopWeb.Message.MessageController do
 
   def send(conn, params) do
     params = params |> Map.put("sender_id", conn.assigns.account.user.id)
+    user_id = conn.assigns.account.user.id
 
     case Chats.get_chat(params["chat_id"]) do
       nil ->
         {:error, :chat_not_found}
 
       chat ->
-        if chat.user1_id == conn.assigns.account.user.id ||
-             chat.user2_id == conn.assigns.account.user.id do
+        if chat.user1_id == user_id || chat.user2_id == user_id do
           with {:ok, %Message{} = message} <- Messages.create_message(params) do
             Chats.update_last_message(chat.id, message.id, message.inserted_at)
             publish_message(chat.id, message)
@@ -104,38 +95,20 @@ defmodule ShopWeb.Message.MessageController do
   def update(conn, %{"id" => id, "message_id" => message_id, "content" => content}) do
     user_id = conn.assigns.account.user.id
 
-    case Chats.get_chat(id) do
-      nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "chat not found"})
+    with {:ok, _chat} <- get_chat_if_member(id, user_id),
+         {:ok, message} <- get_message_if_owner(message_id, user_id),
+         {:ok, updated_message} <- Messages.update_message(message, %{content: content}) do
+      render(conn, :show, message: updated_message)
+    else
+      {:error, :chat_not_found} ->
+        conn |> put_status(:not_found) |> json(%{error: "chat not found"})
 
-      chat ->
-        if chat.user1.id != user_id and chat.user2.id != user_id do
-          {:error, :forbidden}
-        else
-          case Messages.get_message(message_id) do
-            nil ->
-              conn
-              |> put_status(:not_found)
-              |> json(%{error: "message not found"})
+      {:error, :message_not_found} ->
+        conn |> put_status(:not_found) |> json(%{error: "message not found"})
 
-            message ->
-              if message.sender_id != user_id do
-                {:error, :forbidden}
-              else
-                with {:ok, %Message{} = updated_message} <-
-                       Messages.update_message(message, %{content: content}) do
-                  render(conn, :show, message: updated_message)
-                end
-              end
-          end
-        end
+      {:error, :forbidden} ->
+        conn |> put_status(:forbidden) |> json(%{error: "forbidden"})
     end
-  end
-
-  def update(_conn, _params) do
-    {:error, :bad_request}
   end
 
   operation(:delete,
@@ -160,31 +133,46 @@ defmodule ShopWeb.Message.MessageController do
   def delete(conn, %{"id" => id, "message_id" => message_id}) do
     user_id = conn.assigns.account.user.id
 
-    case Chats.get_chat(id) do
+    with {:ok, _chat} <- get_chat_if_member(id, user_id),
+         {:ok, message} <- get_message_if_owner(message_id, user_id),
+         {:ok, _deleted} <- Messages.delete_message(message) do
+      send_resp(conn, :no_content, "")
+    else
+      {:error, :chat_not_found} ->
+        conn |> put_status(:not_found) |> json(%{error: "chat not found"})
+
+      {:error, :message_not_found} ->
+        conn |> put_status(:not_found) |> json(%{error: "message not found"})
+
+      {:error, :forbidden} ->
+        conn |> put_status(:forbidden) |> json(%{error: "forbidden"})
+    end
+  end
+
+  defp get_chat_if_member(chat_id, user_id) do
+    case Chats.get_chat(chat_id) do
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "chat not found"})
+        {:error, :chat_not_found}
 
       chat ->
-        if chat.user1.id != user_id and chat.user2.id != user_id do
-          {:error, :forbidden}
+        if chat.user1_id == user_id || chat.user2_id == user_id do
+          {:ok, chat}
         else
-          case Messages.get_message(message_id) do
-            nil ->
-              conn
-              |> put_status(:not_found)
-              |> json(%{error: "message not found"})
+          {:error, :forbidden}
+        end
+    end
+  end
 
-            message ->
-              if message.sender_id != user_id do
-                {:error, :forbidden}
-              else
-                with {:ok, %Message{}} <- Messages.delete_message(message) do
-                  send_resp(conn, :no_content, "")
-                end
-              end
-          end
+  defp get_message_if_owner(message_id, user_id) do
+    case Messages.get_message(message_id) do
+      nil ->
+        {:error, :message_not_found}
+
+      message ->
+        if message.sender_id == user_id do
+          {:ok, message}
+        else
+          {:error, :forbidden}
         end
     end
   end

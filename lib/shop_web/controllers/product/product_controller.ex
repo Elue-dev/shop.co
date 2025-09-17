@@ -91,6 +91,7 @@ defmodule ShopWeb.Product.ProductController do
     limit = Map.get(params, "limit", "15") |> String.to_integer()
     prev_cursor = Map.get(params, "prev")
     next_cursor = Map.get(params, "next")
+
     result = Products.list_products(filters, limit, prev_cursor, next_cursor)
     render(conn, :index, products: result.data, pagination: result.pagination)
   end

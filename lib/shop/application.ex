@@ -6,6 +6,7 @@ defmodule Shop.Application do
     children = [
       ShopWeb.Telemetry,
       Shop.Repo,
+      Shop.Cache,
       {DNSCluster, query: Application.get_env(:shop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Shop.PubSub},
       {Finch, name: ShopFinch},
