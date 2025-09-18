@@ -32,7 +32,8 @@ defmodule Shop.Chats.Messages do
   def create_message(params) do
     case do_create_message(params) do
       {:ok, message} = result ->
-        Cache.delete(@messages_cache_key <> params["chat_id"])
+        Cache.delete(@messages_cache_key <> params[:chat_id])
+
         Cache.put(@message_cache_key <> message.id, message, @single_message_ttl)
         result
 
@@ -54,10 +55,10 @@ defmodule Shop.Chats.Messages do
   end
 
   def delete_message(%Message{} = message) do
-    case do_delete_message(message) do
-      {:ok, _deleted_message} = result ->
-        Cache.delete(@message_cache_key <> message.id)
-        Cache.delete(@messages_cache_key <> message.chat_id)
+    case do_update_message(message, %{is_deleted: true}) do
+      {:ok, updated_message} = result ->
+        Cache.put(@message_cache_key <> updated_message.id, updated_message, @single_message_ttl)
+        Cache.delete(@messages_cache_key <> updated_message.chat_id)
         result
 
       error ->
@@ -96,9 +97,5 @@ defmodule Shop.Chats.Messages do
     message
     |> Message.changeset(params)
     |> Repo.update()
-  end
-
-  defp do_delete_message(message) do
-    Repo.delete(message)
   end
 end

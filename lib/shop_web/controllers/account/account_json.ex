@@ -40,6 +40,7 @@ defmodule ShopWeb.Account.AccountJSON do
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
+      full_name: user.first_name <> " " <> user.last_name,
       phone: user.phone,
       tag: user.tag,
       last_login_at: user.last_login_at,

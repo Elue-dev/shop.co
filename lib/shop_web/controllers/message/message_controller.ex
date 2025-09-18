@@ -7,6 +7,7 @@ defmodule ShopWeb.Message.MessageController do
   alias Shop.Chats.Messages
   alias Shop.Schema.Message
   alias ShopWeb.Events.SocketHandlers
+  alias Shop.Helpers.ChatHelper
 
   operation(:list,
     summary: "List chat messages",
@@ -95,8 +96,8 @@ defmodule ShopWeb.Message.MessageController do
   def update(conn, %{"id" => id, "message_id" => message_id, "content" => content}) do
     user_id = conn.assigns.account.user.id
 
-    with {:ok, _chat} <- get_chat_if_member(id, user_id),
-         {:ok, message} <- get_message_if_owner(message_id, user_id),
+    with {:ok, _chat} <- ChatHelper.get_chat_if_member(id, user_id),
+         {:ok, message} <- ChatHelper.get_message_if_owner(message_id, user_id),
          {:ok, updated_message} <- Messages.update_message(message, %{content: content}) do
       render(conn, :show, message: updated_message)
     else
@@ -133,8 +134,8 @@ defmodule ShopWeb.Message.MessageController do
   def delete(conn, %{"id" => id, "message_id" => message_id}) do
     user_id = conn.assigns.account.user.id
 
-    with {:ok, _chat} <- get_chat_if_member(id, user_id),
-         {:ok, message} <- get_message_if_owner(message_id, user_id),
+    with {:ok, _chat} <- ChatHelper.get_chat_if_member(id, user_id),
+         {:ok, message} <- ChatHelper.get_message_if_owner(message_id, user_id),
          {:ok, _deleted} <- Messages.delete_message(message) do
       send_resp(conn, :no_content, "")
     else
@@ -149,33 +150,6 @@ defmodule ShopWeb.Message.MessageController do
     end
   end
 
-  defp get_chat_if_member(chat_id, user_id) do
-    case Chats.get_chat(chat_id) do
-      nil ->
-        {:error, :chat_not_found}
-
-      chat ->
-        if chat.user1_id == user_id || chat.user2_id == user_id do
-          {:ok, chat}
-        else
-          {:error, :forbidden}
-        end
-    end
-  end
-
-  defp get_message_if_owner(message_id, user_id) do
-    case Messages.get_message(message_id) do
-      nil ->
-        {:error, :message_not_found}
-
-      message ->
-        if message.sender_id == user_id do
-          {:ok, message}
-        else
-          {:error, :forbidden}
-        end
-    end
-  end
 
   defp publish_message(chat_id, message) do
     SocketHandlers.publish_message(%{

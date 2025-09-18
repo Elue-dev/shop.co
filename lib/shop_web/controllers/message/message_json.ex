@@ -14,6 +14,7 @@ defmodule ShopWeb.Message.MessageJSON do
       id: message.id,
       content: message.content,
       read_at: message.read_at,
+      is_deleted: message.is_deleted,
       inserted_at: message.inserted_at,
       updated_at: message.updated_at,
       sender: sender_data(message.sender)
