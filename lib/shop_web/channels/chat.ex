@@ -110,13 +110,12 @@ defmodule ShopWeb.Channels.Chat do
            {:ok, _deleted_message} <- Messages.delete_message(message) do
         IO.puts("Message #{message_id} successfully deleted from database")
 
-        # broadcast!(socket, "message_delete_confirmed", %{
-        #   message_id: message_id,
-        #   confirmed_at: DateTime.utc_now()
-        # })
+        broadcast!(socket, "message_delete_confirmed", %{
+          message_id: message_id,
+          confirmed_at: DateTime.utc_now()
+        })
       else
         {:error, :chat_not_found} ->
-          # Revert the optimistic update by broadcasting the message back
           broadcast!(socket, "message_delete_failed", %{
             message_id: message_id,
             error: "Chat not found",
