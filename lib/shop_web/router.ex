@@ -2,24 +2,7 @@ defmodule ShopWeb.Router do
   use ShopWeb, :router
   use Plug.ErrorHandler
 
-  def handle_errors(conn, %{reason: %Phoenix.Router.NoRouteError{message: message}}) do
-    conn
-    |> json(%{errors: message})
-    |> halt()
-  end
-
-  def handle_errors(conn, %{reason: %{message: message}}) do
-    conn
-    |> json(%{errors: message})
-    |> halt()
-  end
-
-  def handle_errors(conn, %{reason: reason}) do
-    conn
-    |> put_status(:internal_server_error)
-    |> Phoenix.Controller.json(%{errors: inspect(reason)})
-    |> halt()
-  end
+  defdelegate handle_errors(conn, error), to: ShopWeb.ErrorHandler
 
   pipeline :api do
     plug :accepts, ["json", "multipart"]

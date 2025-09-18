@@ -9,6 +9,13 @@ defmodule ShopWeb.Message.MessageController do
   alias ShopWeb.Events.SocketHandlers
   alias Shop.Helpers.ChatHelper
 
+  alias ShopWeb.Schemas.Message.{
+    CreateMessageRequest,
+    MessageResponse,
+    MessagesListResponse,
+    ErrorResponse
+  }
+
   operation(:list,
     summary: "List chat messages",
     description: "Retrieve all messages for a given chat (ordered by oldest first).",
@@ -149,7 +156,6 @@ defmodule ShopWeb.Message.MessageController do
         conn |> put_status(:forbidden) |> json(%{error: "forbidden"})
     end
   end
-
 
   defp publish_message(chat_id, message) do
     SocketHandlers.publish_message(%{

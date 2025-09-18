@@ -13,7 +13,7 @@ defmodule Shop.Schema.Product do
              :name,
              :price,
              :description,
-             :discount_price,
+             :percentage_discount,
              :images,
              :sizes,
              :stock_quantity,
@@ -27,7 +27,7 @@ defmodule Shop.Schema.Product do
     field :name, :string
     field :price, :decimal
     field :description, :string
-    field :discount_price, :decimal
+    field :percentage_discount, :decimal
     field :images, {:array, :string}
     field :sizes, {:array, Ecto.Enum}, values: @sizes
     field :stock_quantity, :integer
@@ -50,7 +50,7 @@ defmodule Shop.Schema.Product do
       :name,
       :price,
       :description,
-      :discount_price,
+      :percentage_discount,
       :images,
       :sizes,
       :stock_quantity,
@@ -69,8 +69,26 @@ defmodule Shop.Schema.Product do
       :dress_style_id
     ])
     # |> validate_length(:images, min: 1, message: "must have at least one image")
+    |> validate_number(:percentage_discount,
+      greater_than_or_equal_to: 0,
+      less_than_or_equal_to: 100
+    )
     |> unique_constraint(:name)
     |> assoc_constraint(:category)
     |> assoc_constraint(:dress_style)
   end
+
+  def discounted_price(%__MODULE__{price: _price, percentage_discount: nil}), do: nil
+
+  def discounted_price(%__MODULE__{price: price, percentage_discount: percentage})
+      when percentage > 0 do
+    discount_amount = Decimal.mult(price, Decimal.div(percentage, 100))
+    Decimal.sub(price, discount_amount)
+  end
+
+  def discounted_price(%__MODULE__{price: price}), do: price
+
+  def has_discount?(%__MODULE__{percentage_discount: nil}), do: false
+  def has_discount?(%__MODULE__{percentage_discount: percentage}) when percentage > 0, do: true
+  def has_discount?(_), do: false
 end
