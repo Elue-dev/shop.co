@@ -49,6 +49,7 @@ defmodule Shop.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:guardian, "~> 2.4"},
       {:bcrypt_elixir, "~> 3.3"},
+      {:oban, "~> 2.17"},
       {:dotenv, "~> 3.0.0", only: [:dev, :test]},
       {:bandit, "~> 1.5"}
     ]

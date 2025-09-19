@@ -70,7 +70,6 @@ defmodule Shop.Products do
     end
   end
 
-
   defp fetch_products_from_db(filters, limit, prev, next) do
     base_query =
       Product
@@ -130,6 +129,7 @@ defmodule Shop.Products do
   defp fetch_product_from_db(id) do
     Product
     |> where([p], p.id == ^id)
+    |> order_by([p], desc: p.inserted_at)
     |> join(:left, [p], r in assoc(p, :reviews))
     |> group_by([p], p.id)
     |> select_merge([p, r], %{avg_rating: avg(r.rating)})

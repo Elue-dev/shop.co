@@ -7,6 +7,7 @@ defmodule Shop.Application do
       ShopWeb.Telemetry,
       Shop.Repo,
       Shop.Cache,
+      {Oban, Application.fetch_env!(:shop, Oban)},
       {DNSCluster, query: Application.get_env(:shop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Shop.PubSub},
       {Finch, name: ShopFinch},

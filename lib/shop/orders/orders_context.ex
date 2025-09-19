@@ -11,11 +11,12 @@ defmodule Shop.Orders do
   def list_orders(user_id) do
     Order
     |> where([o], o.user_id == ^user_id)
+    |> order_by([o], desc: o.inserted_at)
     |> Repo.all()
     |> Repo.preload([:user, :order_items])
   end
 
-  def get_order!(id), do: Repo.get!(Order, id)
+  def get_order(id), do: Repo.get(Order, id)
 
   # def create_order(attrs) do
   #   %Order{}

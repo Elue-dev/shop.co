@@ -24,7 +24,7 @@ defmodule Shop.Schema.Order do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
-  @payment_statuses [:pending, :success, :failed]
+  @payment_statuses [:pending, :success, :failed, :cancelled]
   @payment_methods [:card, :bank_transfer, :cash_on_delivery]
 
   schema "orders" do

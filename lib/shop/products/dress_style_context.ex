@@ -9,7 +9,9 @@ defmodule Shop.Products.DressStyles do
   alias Shop.Schema.DressStyle
 
   def list_dress_styles do
-    Repo.all(DressStyle)
+    DressStyle
+    |> order_by([d], desc: d.inserted_at)
+    |> Repo.all()
   end
 
   def get_dress_style(id) do

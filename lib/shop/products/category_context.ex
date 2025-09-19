@@ -5,7 +5,9 @@ defmodule Shop.Products.Categories do
   alias Shop.Schema.Category
 
   def list_categories do
-    Repo.all(Category)
+    Category
+    |> order_by([c], desc: c.inserted_at)
+    |> Repo.all()
   end
 
   def get_category(id), do: Repo.get(Category, id)

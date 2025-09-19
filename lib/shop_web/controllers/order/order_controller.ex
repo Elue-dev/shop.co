@@ -4,6 +4,7 @@ defmodule ShopWeb.Order.OrderController do
 
   alias Shop.Orders
   alias Shop.Schema.Order
+  alias Shop.Jobs.OrderStatusJob
 
   alias ShopWeb.Schemas.Order.{
     PlaceOrderRequest,
@@ -52,6 +53,10 @@ defmodule ShopWeb.Order.OrderController do
       params |> Map.put("user_id", conn.assigns.account.user.id)
 
     with {:ok, %Order{} = order} <- Orders.create_order(params) do
+      %{order_id: order.id}
+      |> OrderStatusJob.new(schedule_in: 120)
+      |> Oban.insert()
+
       conn
       |> put_status(:created)
       |> render(:show, order: order)

@@ -2,7 +2,8 @@ defmodule Shop.Helpers.ProductQueryBuilder do
   import Ecto.Query, warn: false
 
   def build_query(query, filters) do
-    Enum.reduce(filters, query, fn {key, value}, acc ->
+    filters
+    |> Enum.reduce(query, fn {key, value}, acc ->
       apply_filter(acc, key, value)
     end)
   end

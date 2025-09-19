@@ -29,6 +29,11 @@ config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :shop, Oban,
+  repo: Shop.Repo,
+  queues: [default: 10],
+  plugins: [Oban.Plugins.Pruner]
+
 config :shop, :cloudinary,
   cloud_name: "compile-time-placeholder",
   api_key: "compile-time-placeholder",
