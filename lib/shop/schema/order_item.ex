@@ -7,12 +7,14 @@ defmodule Shop.Schema.OrderItem do
            only: [:id, :product_id, :quantity, :unit_price, :subtotal, :inserted_at, :updated_at]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @sizes [:small, :medium, :large, :x_large]
 
   schema "order_items" do
     belongs_to :order, Shop.Schema.Order, type: :binary_id
     belongs_to :product, Shop.Schema.Product, type: :binary_id
 
     field :quantity, :integer
+    field :size, :string
     field :unit_price, :decimal
     field :subtotal, :decimal
 
@@ -22,9 +24,12 @@ defmodule Shop.Schema.OrderItem do
   @doc false
   def changeset(order_item, attrs \\ %{}) do
     order_item
-    |> cast(attrs, [:order_id, :product_id, :quantity, :unit_price, :subtotal])
-    |> validate_required([:product_id, :quantity, :unit_price])
+    |> cast(attrs, [:order_id, :product_id, :quantity, :unit_price, :subtotal, :size])
+    |> validate_required([:product_id, :quantity, :size, :unit_price])
     |> validate_number(:quantity, greater_than: 0)
+    |> validate_inclusion(:size, Enum.map(@sizes, &to_string/1),
+      message: "must be one of: #{Enum.join(@sizes, ", ")}"
+    )
     |> compute_subtotal()
   end
 
