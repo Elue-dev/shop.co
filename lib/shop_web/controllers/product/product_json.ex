@@ -19,7 +19,6 @@ defmodule ShopWeb.Product.ProductJSON do
       price: decimal_to_float(product.price),
       description: product.description,
       percentage_discount: decimal_to_float(product.percentage_discount),
-      discounted_price: Product.discounted_price(product),
       has_discount: Product.has_discount?(product),
       images: product.images,
       sizes: product.sizes,

@@ -11,7 +11,16 @@ defmodule ShopWeb.Schemas.Product do
       name: %Schema{type: :string, description: "Product name", example: "Awesome T-Shirt"},
       price: %Schema{type: :number, description: "Product price", example: 29.99},
       description: %Schema{type: :string, description: "Product description"},
-      discount_price: %Schema{type: :number, description: "Discounted price", nullable: true},
+      percentage_discount: %Schema{
+        type: :number,
+        description: "Percentage Discount",
+        nullable: true
+      },
+      has_discount: %Schema{
+        type: :boolean,
+        description: "Has a Discount",
+        nullable: true
+      },
       images: %Schema{type: :array, items: %Schema{type: :string}, description: "Product images"},
       sizes: %Schema{
         type: :array,
