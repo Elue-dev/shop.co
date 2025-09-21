@@ -19,7 +19,9 @@ defmodule ShopWeb.Review.ReviewJSON do
       title: review.title,
       comment: review.comment,
       helpful_count: review.helpful_count,
-      user: get_user(review.user)
+      user: get_user(review.user),
+      inserted_at: review.inserted_at,
+      updated_at: review.updated_at
     }
   end
 

@@ -37,7 +37,9 @@ defmodule ShopWeb.Schemas.Review do
             first_name: %Schema{type: :string, example: "John"},
             last_name: %Schema{type: :string, example: "Doe"}
           }
-        }
+        },
+        inserted_at: %Schema{type: :string, format: :date_time},
+        updated_at: %Schema{type: :string, format: :date_time}
       },
       required: [:id, :rating, :title, :comment, :helpful_count, :user]
     })

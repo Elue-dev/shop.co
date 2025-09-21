@@ -74,6 +74,7 @@ defmodule ShopWeb.Router do
       get "/", Product.ProductController, :list_products
       get "/categories", Category.CategoryController, :list_categories
       get "/dress-styles", DressStyle.DressStyleController, :list_styles
+      get "/:id/reviews", Review.ReviewController, :list_product_reviews
     end
   end
 
@@ -121,7 +122,6 @@ defmodule ShopWeb.Router do
 
     scope "/products" do
       post "/:id/review", Review.ReviewController, :add_product_review
-      get "/:id/reviews", Review.ReviewController, :list_product_reviews
       post "/:id/review/:review_id/helpful", Review.ReviewController, :mark_helpful
     end
   end

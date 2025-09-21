@@ -50,34 +50,13 @@ defmodule ShopWeb.Chat.ChatController do
     with {:ok, _uuid} <- Ecto.UUID.cast(user2_id),
          %User{} = _user <- Users.get_user(user2_id),
          chat_result <- find_or_create_chat(user1_id, user2_id, params) do
-      case chat_result do
-        {:existing, chat} ->
-          conn
-          |> put_status(:ok)
-          |> render(:show, chat: chat)
-
-        {:created, chat} ->
-          conn
-          |> put_status(:created)
-          |> render(:show, chat: chat)
-
-        {:error, reason} ->
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{error: inspect(reason)})
-      end
+      handle_chat_response(conn, chat_result)
     else
       :error ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "invalid id format"})
-        |> halt()
+        error_response(conn, :bad_request, "invalid id format")
 
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "user not found"})
-        |> halt()
+        error_response(conn, :bad_request, "user not found")
     end
   end
 
@@ -118,5 +97,26 @@ defmodule ShopWeb.Chat.ChatController do
           {:error, reason} -> {:error, reason}
         end
     end
+  end
+
+  defp handle_chat_response(conn, chat_result) do
+    case chat_result do
+      {:existing, chat} -> render_chat(conn, :ok, chat)
+      {:created, chat} -> render_chat(conn, :created, chat)
+      {:error, reason} -> error_response(conn, :unprocessable_entity, inspect(reason))
+    end
+  end
+
+  defp render_chat(conn, status, chat) do
+    conn
+    |> put_status(status)
+    |> render(:show, chat: chat)
+  end
+
+  defp error_response(conn, status, message) do
+    conn
+    |> put_status(status)
+    |> json(%{error: message})
+    |> halt()
   end
 end
