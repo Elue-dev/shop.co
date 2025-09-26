@@ -16,7 +16,7 @@ defmodule Shop.Schema.AccountTest do
     {:updated_at, :utc_datetime}
   ]
 
-  defp normalize_type({:parameterized, {Ecto.Enum, _}}), do: Ecto.Enum
+  defp normalize_type({:parameterized, {Ecto.Enum, _mappings}}), do: Ecto.Enum
   defp normalize_type(type), do: type
 
   describe "schema has the valid fields with types" do
