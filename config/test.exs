@@ -7,9 +7,9 @@ import Config
 # Run `mix help test` for more information.
 config :shop, Shop.Repo,
   username: "postgres",
-  password: "postgres",
+  password: System.get_env("PG_USER_PASS"),
   hostname: "localhost",
-  database: "shop_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "shop_co_test",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
