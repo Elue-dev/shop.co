@@ -4,6 +4,11 @@ defmodule ShopWeb.TestUtils do
   alias Shop.Accounts
   alias ShopWeb.Auth.Guardian
 
+  @error_messages %{
+    admin_blocker: "you must be an admin to perform this action",
+    account_inactive: "account inactive"
+  }
+
   def authorized_account(conn, status \\ "active") do
     {:ok, admin} =
       Accounts.create_account(%{
@@ -35,4 +40,6 @@ defmodule ShopWeb.TestUtils do
     conn
     |> put_req_header("authorization", "Bearer #{token}")
   end
+
+  def errors, do: @error_messages
 end
