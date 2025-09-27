@@ -59,7 +59,7 @@ defmodule ShopWeb.FallbackController do
 
   def call(conn, {:error, :item_not_found}) do
     conn
-    |> put_status(:bad_request)
+    |> put_status(:not_found)
     |> json(%{error: "item not found"})
   end
 

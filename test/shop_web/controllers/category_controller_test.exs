@@ -55,9 +55,12 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.admin_authorized_account(conn)
 
       {:ok, cat} = Categories.create_category(%{"name" => "Gym"})
+
       conn = conn |> patch("/products/categories/#{cat.id}", %{"name" => "Gym updated"})
 
-      assert %{"id" => _id, "name" => "Gym updated"} = json_response(conn, 200)["data"]
+      assert %{"id" => id, "name" => "Gym updated"} = json_response(conn, 200)["data"]
+
+      assert %Category{name: "Gym updated"} = Categories.get_category(id)
     end
 
     test "should not be able to update a category if not admin", %{conn: conn} do
@@ -78,6 +81,8 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = conn |> delete("/products/categories/#{cat.id}")
 
       assert conn |> response(204)
+
+      assert Categories.get_category(cat.id) == nil
     end
 
     test "should not be able to delete a category if not admin", %{conn: conn} do

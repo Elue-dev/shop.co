@@ -11,6 +11,7 @@ defmodule ShopWeb.TestUtils do
     account_inactive: "account inactive",
     invalid_creds: "invalid credentials",
     invalid_params: "invalid parameters",
+    not_found: "item not found",
     not_blank: ["can't be blank"]
   }
 
