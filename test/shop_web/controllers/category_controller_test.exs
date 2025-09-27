@@ -15,8 +15,8 @@ defmodule ShopWeb.CategoryControllerTest do
 
       data = json_response(conn, 200)["data"]
 
-      assert Enum.any?(data, &(&1["id"] == cat1.id))
-      assert Enum.any?(data, &(&1["id"] == cat2.id))
+      assert data |> Enum.any?(&(&1["id"] == cat1.id))
+      assert data |> Enum.any?(&(&1["id"] == cat2.id))
     end
   end
 
