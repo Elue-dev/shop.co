@@ -10,7 +10,8 @@ defmodule ShopWeb.TestUtils do
     admin_blocker: "you must be an admin to perform this action",
     account_inactive: "account inactive",
     invalid_creds: "invalid credentials",
-    invalid_params: "invalid parameters"
+    invalid_params: "invalid parameters",
+    not_blank: ["can't be blank"]
   }
 
   def authorized_account(conn, status \\ "active") do

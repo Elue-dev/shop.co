@@ -10,7 +10,7 @@ defmodule ShopWeb.CategoryControllerTest do
       {:ok, cat1} = Categories.create_category(%{"name" => "Electronics"})
       {:ok, cat2} = Categories.create_category(%{"name" => "Books"})
 
-      conn = get(conn, "/products/categories")
+      conn = conn |> get("/products/categories")
 
       data = json_response(conn, 200)["data"]
 
@@ -24,7 +24,7 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.admin_authorized_account(conn)
       valid_attrs = %{"name" => "Fashion"}
 
-      conn = post(conn, "/products/categories", valid_attrs)
+      conn = conn |> post("/products/categories", valid_attrs)
 
       assert %{"id" => id, "name" => "Fashion"} = json_response(conn, 201)["data"]
 
@@ -35,7 +35,7 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.admin_authorized_account(conn, "inactive")
       valid_attrs = %{"name" => "Fashion"}
 
-      conn = post(conn, "/products/categories", valid_attrs)
+      conn = conn |> post("/products/categories", valid_attrs)
 
       assert json_response(conn, 403)["error"] == TestUtils.errors().account_inactive
     end
@@ -44,7 +44,7 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.admin_authorized_account(conn)
       invalid_attrs = %{"name" => nil}
 
-      conn = post(conn, "/products/categories", invalid_attrs)
+      conn = conn |> post("/products/categories", invalid_attrs)
 
       assert json_response(conn, 422)["errors"] != %{}
     end
@@ -55,7 +55,7 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.admin_authorized_account(conn)
 
       {:ok, cat} = Categories.create_category(%{"name" => "Gym"})
-      conn = patch(conn, "/products/categories/#{cat.id}", %{"name" => "Gym updated"})
+      conn = conn |> patch("/products/categories/#{cat.id}", %{"name" => "Gym updated"})
 
       assert %{"id" => _id, "name" => "Gym updated"} = json_response(conn, 200)["data"]
     end
@@ -64,7 +64,7 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.authorized_account(conn)
       {:ok, cat} = Categories.create_category(%{"name" => "Casual"})
 
-      conn = patch(conn, "/products/categories/#{cat.id}", %{"name" => "Casual updated"})
+      conn = conn |> patch("/products/categories/#{cat.id}", %{"name" => "Casual updated"})
 
       assert json_response(conn, 403)["error"] == TestUtils.errors().admin_blocker
     end
@@ -75,19 +75,19 @@ defmodule ShopWeb.CategoryControllerTest do
       conn = TestUtils.admin_authorized_account(conn)
 
       {:ok, cat} = Categories.create_category(%{"name" => "Gym"})
-      conn = delete(conn, "/products/categories/#{cat.id}")
+      conn = conn |> delete("/products/categories/#{cat.id}")
 
-      assert response(conn, 204)
+      assert conn |> response(204)
     end
 
     test "should not be able to delete a category if not admin", %{conn: conn} do
       conn = TestUtils.authorized_account(conn)
       {:ok, cat} = Categories.create_category(%{"name" => "Casual"})
 
-      conn = patch(conn, "/products/categories/#{cat.id}")
+      conn = conn |> patch("/products/categories/#{cat.id}")
 
       assert %{"error" => "you must be an admin to perform this action"} =
-               json_response(conn, 403)
+               conn |> json_response(403)
     end
   end
 end

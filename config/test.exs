@@ -24,6 +24,8 @@ config :shop, ShopWeb.Auth.Guardian,
   issuer: "shop",
   secret_key: "test_secret_key"
 
+config :shop, Oban, testing: :manual
+
 # In test we don't send emails
 config :shop, Shop.Mailer, adapter: Swoosh.Adapters.Test
 
