@@ -15,9 +15,26 @@ defmodule ShopWeb.AccountControllerTest do
 
       response = json_response(conn, 200)
 
-      assert Map.has_key?(response, "data")
+      assert response |> Map.has_key?("data")
       assert response["data"]["id"] == account.id
-      assert is_binary(response["token"])
+      assert response["token"] |> is_binary()
+    end
+
+    test "cannot login with invalid credentials", %{conn: conn} do
+      {:ok, account} = TestUtils.random_account()
+      {:ok, user, _} = TestUtils.random_user(account)
+
+      valid_attrs = %{"email" => user.email, "password" => "wrong_password"}
+
+      conn = post(conn, "/auth/login", valid_attrs)
+
+      assert json_response(conn, 401)["error"] == TestUtils.errors().invalid_creds
+    end
+
+    test "throws errors when login params is not provided", %{conn: conn} do
+      conn = post(conn, "/auth/login", %{})
+
+      assert json_response(conn, 400)["error"] == TestUtils.errors().invalid_params
     end
   end
 end
