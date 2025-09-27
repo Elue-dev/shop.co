@@ -17,8 +17,12 @@ config :shop, Shop.Repo,
 # you can enable the server option below.
 config :shop, ShopWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "3oKlygKaK5tqkWrhmVybdO4Fc/DTempStqGFXMeOVyyZ6A70h9+7QCNIiEBsfrds",
+  secret_key_base: "3emysq1IQToT0o2Xmxn0Y3m/1+v3W1W5+RlaCm1IUCV7oNplBj3W/3WVsjNx+zMw",
   server: false
+
+config :shop, ShopWeb.Auth.Guardian,
+  issuer: "shop",
+  secret_key: "test_secret_key"
 
 # In test we don't send emails
 config :shop, Shop.Mailer, adapter: Swoosh.Adapters.Test

@@ -133,12 +133,18 @@ defmodule ShopWeb.Product.ProductController do
 
     params = params |> Map.put("images", image_urls)
 
-    with {:ok, %Product{} = product} <- Shop.Products.create_product(params) do
-      SocketHandlers.publish_product(%{name: product.name})
+    case Shop.Products.create_product(params) do
+      {:ok, product} ->
+        Task.start(fn -> SocketHandlers.publish_product(%{name: product.name}) end)
 
-      conn
-      |> put_status(:created)
-      |> render(:show, product: product)
+        conn
+        |> put_status(:created)
+        |> render(:show, product: product)
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: reason})
     end
   end
 

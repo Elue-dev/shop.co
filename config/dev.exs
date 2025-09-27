@@ -17,11 +17,17 @@ if File.exists?(".env") do
 end
 
 config :shop, Shop.Repo,
-  url: System.get_env("DATABASE_URL"),
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10,
-  ssl: true
+  # url: System.get_env("DATABASE_URL"),
+  # stacktrace: true,
+  # show_sensitive_data_on_connection_error: true,
+  # pool_size: 10,
+  # ssl: true
+  username: "postgres",
+  password: System.get_env("PG_USER_PASS"),
+  hostname: "localhost",
+  database: "shop_co_test",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: System.schedulers_online() * 2
 
 config :shop, ShopWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("PORT") || "4000")],
