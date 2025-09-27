@@ -28,9 +28,9 @@ defmodule ShopWeb.AccountControllerTest do
       {:ok, account} = TestUtils.random_account()
       {:ok, user, _} = TestUtils.random_user(account)
 
-      valid_attrs = %{"email" => user.email, "password" => "wrong_password"}
+      invalid_attrs = %{"email" => user.email, "password" => "wrong_password"}
 
-      conn = conn |> post("/auth/login", valid_attrs)
+      conn = conn |> post("/auth/login", invalid_attrs)
 
       assert json_response(conn, 401)["error"] == TestUtils.errors().invalid_creds
     end
