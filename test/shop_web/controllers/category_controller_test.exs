@@ -22,7 +22,7 @@ defmodule ShopWeb.CategoryControllerTest do
 
   describe "add_category/2" do
     test "creates category when authenticated, active and data is valid", %{conn: conn} do
-      conn = admin_active_conn(conn)
+      conn = admin_authorized_account(conn)
       valid_attrs = %{"name" => "Fashion"}
 
       conn = post(conn, "/products/categories", valid_attrs)
@@ -33,7 +33,7 @@ defmodule ShopWeb.CategoryControllerTest do
     end
 
     test "does not create category when authenticated, but account inactive", %{conn: conn} do
-      conn = admin_inactive_conn(conn)
+      conn = admin_authorized_account(conn, "inactive")
       valid_attrs = %{"name" => "Fashion"}
 
       conn = post(conn, "/products/categories", valid_attrs)
@@ -42,7 +42,7 @@ defmodule ShopWeb.CategoryControllerTest do
     end
 
     test "does not create category and returns errors when data is invalid", %{conn: conn} do
-      conn = admin_active_conn(conn)
+      conn = admin_authorized_account(conn)
       invalid_attrs = %{"name" => nil}
 
       conn = post(conn, "/products/categories", invalid_attrs)
@@ -51,30 +51,14 @@ defmodule ShopWeb.CategoryControllerTest do
     end
   end
 
-  defp admin_active_conn(conn) do
+  defp admin_authorized_account(conn, status \\ "active") do
     {:ok, admin} =
       Accounts.create_account(%{
         "name" => "Admin",
         "type" => "seller",
         "plan" => "free",
         "role" => "admin",
-        "status" => "active"
-      })
-
-    {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
-    conn
-    |> put_req_header("authorization", "Bearer #{token}")
-  end
-
-  defp admin_inactive_conn(conn) do
-    {:ok, admin} =
-      Accounts.create_account(%{
-        "name" => "Admin",
-        "type" => "seller",
-        "plan" => "free",
-        "role" => "admin",
-        "status" => "inactive"
+        "status" => status
       })
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
