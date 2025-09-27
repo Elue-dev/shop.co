@@ -1,7 +1,6 @@
 defmodule ShopWeb.AccountControllerTest do
   use ShopWeb.ConnCase, async: true
 
-  alias ElixirLS.LanguageServer.Providers.CodeLens.Test
   alias ShopWeb.TestUtils
   alias Faker.{Person, Internet, String, Phone}
 
