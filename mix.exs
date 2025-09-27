@@ -51,6 +51,7 @@ defmodule Shop.MixProject do
       {:bcrypt_elixir, "~> 3.3"},
       {:oban, "~> 2.17"},
       {:dotenv, "~> 3.0.0", only: [:dev, :test]},
+      {:faker, "~> 0.18.0"},
       {:bandit, "~> 1.5"}
     ]
   end
