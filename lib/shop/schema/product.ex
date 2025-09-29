@@ -1,6 +1,6 @@
 defmodule Shop.Schema.Product do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
+  alias Shop.Schema.{Category, DressStyle, Review}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -33,31 +33,40 @@ defmodule Shop.Schema.Product do
     field :stock_quantity, :integer
     field :is_active, :boolean, default: true
 
-    belongs_to :category, Shop.Schema.Category, type: :binary_id
-    belongs_to :dress_style, Shop.Schema.DressStyle, type: :binary_id
+    belongs_to :category, Category, type: :binary_id
+    belongs_to :dress_style, DressStyle, type: :binary_id
 
-    has_many :reviews, Shop.Schema.Review, foreign_key: :product_id
+    has_many :reviews, Review, foreign_key: :product_id
 
     field :avg_rating, :float, virtual: true
 
     timestamps(type: :utc_datetime)
   end
 
+  @type size :: :small | :medium | :large | :x_large
+
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          name: String.t(),
+          price: Decimal.t(),
+          description: String.t(),
+          percentage_discount: Decimal.t() | nil,
+          images: [String.t()],
+          sizes: [size()],
+          stock_quantity: integer(),
+          is_active: boolean(),
+          category_id: Ecto.UUID.t(),
+          dress_style_id: Ecto.UUID.t(),
+          reviews: [Review.t()],
+          avg_rating: float() | nil,
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(product, attrs) do
     product
-    |> cast(attrs, [
-      :name,
-      :price,
-      :description,
-      :percentage_discount,
-      :images,
-      :sizes,
-      :stock_quantity,
-      :is_active,
-      :category_id,
-      :dress_style_id
-    ])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> validate_required([
       :name,
       :price,

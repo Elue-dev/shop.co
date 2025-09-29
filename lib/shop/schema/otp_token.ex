@@ -1,6 +1,5 @@
 defmodule Shop.Schema.OtpToken do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -13,10 +12,20 @@ defmodule Shop.Schema.OtpToken do
     timestamps(type: :utc_datetime)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          email: String.t(),
+          otp: String.t(),
+          expires_at: DateTime.t(),
+          used_at: DateTime.t() | nil,
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(otp_token, attrs) do
     otp_token
-    |> cast(attrs, [:email, :otp, :expires_at, :used_at])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> validate_required([:email, :otp, :expires_at])
   end
 end

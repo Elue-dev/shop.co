@@ -1,6 +1,6 @@
 defmodule Shop.Schema.Account do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
+  alias Shop.Schema.User
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -15,24 +15,30 @@ defmodule Shop.Schema.Account do
     field :metadata, :map
     field :deleted_at, :utc_datetime_usec
 
-    has_one :user, Shop.Schema.User
+    has_one :user, User
 
     timestamps(type: :utc_datetime)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          name: String.t(),
+          type: :buyer | :seller,
+          status: :active | :inactive,
+          plan: String.t(),
+          role: :user | :admin,
+          settings: map(),
+          metadata: map() | nil,
+          deleted_at: DateTime.t() | nil,
+          user: User.t() | Ecto.Association.NotLoaded.t(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(account, attrs) do
     account
-    |> cast(attrs, [
-      :name,
-      :status,
-      :type,
-      :plan,
-      :role,
-      :settings,
-      :metadata,
-      :deleted_at
-    ])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> put_change(:settings, Map.merge(%{"2fa_enabled" => true}, attrs["settings"] || %{}))
     |> validate_required([:name, :type])
   end

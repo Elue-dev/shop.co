@@ -1,6 +1,6 @@
 defmodule Shop.Schema.User do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
+  alias Shop.Schema.Account
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -16,25 +16,32 @@ defmodule Shop.Schema.User do
     field :metadata, :map
     field :deleted_at, :utc_datetime_usec
 
-    belongs_to :account, Shop.Schema.Account, type: :binary_id
+    belongs_to :account, Account, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          email: String.t(),
+          password: String.t(),
+          phone: String.t() | nil,
+          tag: String.t(),
+          first_name: String.t(),
+          last_name: String.t(),
+          last_login_at: DateTime.t() | nil,
+          confirmed_at: DateTime.t() | nil,
+          metadata: map() | nil,
+          deleted_at: DateTime.t() | nil,
+          account_id: Ecto.UUID.t() | nil,
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [
-      :email,
-      :password,
-      :phone,
-      :first_name,
-      :last_name,
-      :last_login_at,
-      :confirmed_at,
-      :metadata,
-      :deleted_at
-    ])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> put_default_tag()
     |> validate_required([
       :email,

@@ -1,6 +1,6 @@
 defmodule Shop.Schema.OrderItem do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
+  alias Shop.Schema.{Order, Product}
   alias Decimal
 
   @derive {Jason.Encoder,
@@ -10,8 +10,8 @@ defmodule Shop.Schema.OrderItem do
   @sizes [:small, :medium, :large, :x_large]
 
   schema "order_items" do
-    belongs_to :order, Shop.Schema.Order, type: :binary_id
-    belongs_to :product, Shop.Schema.Product, type: :binary_id
+    belongs_to :order, Order, type: :binary_id
+    belongs_to :product, Product, type: :binary_id
 
     field :quantity, :integer
     field :size, :string
@@ -21,10 +21,22 @@ defmodule Shop.Schema.OrderItem do
     timestamps(type: :utc_datetime_usec)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          order_id: Ecto.UUID.t(),
+          product_id: Ecto.UUID.t(),
+          quantity: integer(),
+          size: String.t(),
+          unit_price: Decimal.t(),
+          subtotal: Decimal.t(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(order_item, attrs \\ %{}) do
     order_item
-    |> cast(attrs, [:order_id, :product_id, :quantity, :unit_price, :subtotal, :size])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> validate_required([:product_id, :quantity, :size, :unit_price])
     |> validate_number(:quantity, greater_than: 0)
     |> validate_inclusion(:size, Enum.map(@sizes, &to_string/1),

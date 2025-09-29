@@ -1,6 +1,5 @@
 defmodule Shop.Schema.DressStyle do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -12,23 +11,20 @@ defmodule Shop.Schema.DressStyle do
     timestamps(type: :utc_datetime)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          name: String.t(),
+          cover_photo: String.t(),
+          description: String.t() | nil,
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(dress_style, attrs) do
-    allowed_fields = [:name, :cover_photo, :description]
-    provided_fields = Map.keys(attrs) |> Enum.map(&String.to_atom/1)
-    unexpected = provided_fields -- allowed_fields
-
-    changeset =
-      dress_style
-      |> cast(attrs, allowed_fields)
-      |> validate_required([:name, :cover_photo])
-      |> unique_constraint(:name)
-
-    if unexpected == [] do
-      changeset
-    else
-      changeset
-      |> add_error(:detail, "unexpected field(s): #{Enum.join(unexpected, ", ")}")
-    end
+    dress_style
+    |> strict_cast(attrs, schema_fields(__MODULE__))
+    |> validate_required([:name, :cover_photo])
+    |> unique_constraint(:name)
   end
 end

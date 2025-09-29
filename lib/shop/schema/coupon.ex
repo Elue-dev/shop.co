@@ -1,6 +1,5 @@
 defmodule Shop.Schema.Coupon do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -12,10 +11,19 @@ defmodule Shop.Schema.Coupon do
     timestamps(type: :utc_datetime)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          code: String.t(),
+          percentage_discount: integer(),
+          active: boolean(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(coupon, attrs) do
     coupon
-    |> cast(attrs, [:code, :percentage_discount, :active])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> validate_required([:code, :percentage_discount])
     |> unique_constraint(:code)
   end

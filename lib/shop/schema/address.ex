@@ -1,6 +1,5 @@
 defmodule Shop.Schema.Address do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Shop.Schema
 
   @derive {Jason.Encoder, only: [:line1, :line2, :city, :state, :country, :zip_code]}
   embedded_schema do
@@ -12,9 +11,18 @@ defmodule Shop.Schema.Address do
     field :zip_code, :string
   end
 
+  @type t :: %__MODULE__{
+          line1: String.t(),
+          line2: String.t() | nil,
+          city: String.t(),
+          state: String.t(),
+          country: String.t(),
+          zip_code: String.t()
+        }
+
   def changeset(address, attrs) do
     address
-    |> cast(attrs, [:line1, :line2, :city, :state, :country, :zip_code])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> validate_required([:line1, :city, :state, :country, :zip_code])
   end
 end

@@ -1,7 +1,6 @@
 defmodule Shop.Schema.Order do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias Shop.Schema.{OrderItem, Address, Coupon}
+  use Shop.Schema
+  alias Shop.Schema.{OrderItem, Address, User, Coupon}
   alias Shop.Repo
   alias Decimal
 
@@ -24,8 +23,8 @@ defmodule Shop.Schema.Order do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
-  @payment_statuses [:pending, :success, :failed, :cancelled]
-  @payment_methods [:card, :bank_transfer, :cash_on_delivery]
+  @payment_statuses ~w[pending success failed cancelled]a
+  @payment_methods ~w[card bank_transfer cash_on_delivery]a
 
   schema "orders" do
     field :payment_status, Ecto.Enum, values: @payment_statuses, default: :pending
@@ -34,8 +33,8 @@ defmodule Shop.Schema.Order do
     field :payment_method, Ecto.Enum, values: @payment_methods
     field :placed_at, :utc_datetime_usec
 
-    belongs_to :user, Shop.Schema.User, type: :binary_id
-    belongs_to :coupon, Shop.Schema.Coupon, type: :binary_id
+    belongs_to :user, User, type: :binary_id
+    belongs_to :coupon, Coupon, type: :binary_id
 
     has_many :order_items, OrderItem, foreign_key: :order_id, on_replace: :delete
 
@@ -45,18 +44,28 @@ defmodule Shop.Schema.Order do
     timestamps(type: :utc_datetime_usec)
   end
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          payment_status: :pending | :success | :failed | :cancelled,
+          total_amount: Decimal.t(),
+          discount_amount: Decimal.t(),
+          payment_method: :card | :bank_transfer | :cash_on_delivery,
+          placed_at: DateTime.t(),
+          user_id: Ecto.UUID.t(),
+          user: User.t() | Ecto.Association.NotLoaded.t(),
+          coupon_id: Ecto.UUID.t() | nil,
+          coupon: Coupon.t() | Ecto.Association.NotLoaded.t() | nil,
+          order_items: [OrderItem.t()] | Ecto.Association.NotLoaded.t(),
+          shipping_address: Address.t(),
+          billing_address: Address.t(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   @doc false
   def changeset(order, attrs \\ %{}) do
     order
-    |> cast(attrs, [
-      :user_id,
-      :payment_status,
-      :total_amount,
-      :discount_amount,
-      :payment_method,
-      :placed_at,
-      :coupon_id
-    ])
+    |> strict_cast(attrs, schema_fields(__MODULE__))
     |> cast_assoc(:order_items, with: &OrderItem.changeset/2, required: false)
     |> cast_embed(:shipping_address, with: &Address.changeset/2, required: true)
     |> cast_embed(:billing_address, with: &Address.changeset/2, required: true)
