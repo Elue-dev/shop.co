@@ -20,8 +20,10 @@ defmodule ShopWeb.CategoryControllerTest do
   end
 
   describe "adding a category" do
-    test "creates category when authenticated, active and data is valid", %{conn: conn} do
-      conn = TestUtils.admin_authorized_account(conn)
+    test "creates category when authenticated as an admin, active and data is valid", %{
+      conn: conn
+    } do
+      conn = TestUtils.authorized_account(conn, is_admin: true)
       valid_attrs = %{"name" => "Fashion"}
 
       conn = conn |> post("/products/categories", valid_attrs)
@@ -31,8 +33,10 @@ defmodule ShopWeb.CategoryControllerTest do
       assert %Category{name: "Fashion"} = Categories.get_category(id)
     end
 
-    test "does not create category when authenticated, but account inactive", %{conn: conn} do
-      conn = TestUtils.admin_authorized_account(conn, "inactive")
+    test "does not create category when authenticated as an admin, but account inactive", %{
+      conn: conn
+    } do
+      conn = TestUtils.authorized_account(conn, status: "inactive", is_admin: true)
       valid_attrs = %{"name" => "Fashion"}
 
       conn = conn |> post("/products/categories", valid_attrs)
@@ -41,7 +45,7 @@ defmodule ShopWeb.CategoryControllerTest do
     end
 
     test "does not create category and returns errors when data is invalid", %{conn: conn} do
-      conn = TestUtils.admin_authorized_account(conn)
+      conn = TestUtils.authorized_account(conn, is_admin: true)
       invalid_attrs = %{"name" => nil}
 
       conn = conn |> post("/products/categories", invalid_attrs)
@@ -52,7 +56,7 @@ defmodule ShopWeb.CategoryControllerTest do
 
   describe "updating a catgeory" do
     test "should be able to update a category as an admin", %{conn: conn} do
-      conn = TestUtils.admin_authorized_account(conn)
+      conn = TestUtils.authorized_account(conn, is_admin: true)
 
       {:ok, cat} = Categories.create_category(%{"name" => "Gym"})
 
@@ -75,7 +79,7 @@ defmodule ShopWeb.CategoryControllerTest do
 
   describe "deleting a catgeory" do
     test "should be able to delete a category as an admin", %{conn: conn} do
-      conn = TestUtils.admin_authorized_account(conn)
+      conn = TestUtils.authorized_account(conn, is_admin: true)
 
       {:ok, cat} = Categories.create_category(%{"name" => "Gym"})
       conn = conn |> delete("/products/categories/#{cat.id}")

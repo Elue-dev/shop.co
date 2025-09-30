@@ -14,21 +14,16 @@ defmodule ShopWeb.TestUtils do
     not_blank: ["can't be blank"]
   }
 
-  def authorized_account(conn, status \\ "active") do
-    account = insert(:account, status: status)
+  def authorized_account(conn, opts \\ []) do
+    status = Keyword.get(opts, :status, "active")
+    is_admin = Keyword.get(opts, :is_admin, false)
+
+    account =
+      insert(if(is_admin, do: :admin_account, else: :account), status: status)
 
     {:ok, token, _claims} = Guardian.encode_and_sign(account)
 
-    conn
-    |> put_req_header("authorization", "Bearer #{token}")
-  end
-
-  def admin_authorized_account(conn, status \\ "active") do
-    account = insert(:admin_account, status: status)
-    {:ok, token, _claims} = Guardian.encode_and_sign(account)
-
-    conn
-    |> put_req_header("authorization", "Bearer #{token}")
+    put_req_header(conn, "authorization", "Bearer #{token}")
   end
 
   def errors, do: @error_messages
