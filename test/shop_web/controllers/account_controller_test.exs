@@ -1,8 +1,8 @@
 defmodule ShopWeb.AccountControllerTest do
   use ShopWeb.ConnCase, async: true
+  import Shop.Factory.Account
 
   alias ShopWeb.TestUtils
-  alias Faker.{Person, Internet, String, Phone}
 
   @account_only ~w[name type]s
   @user_only ~w[email first_name last_name phone]s
@@ -10,13 +10,12 @@ defmodule ShopWeb.AccountControllerTest do
 
   describe "account login" do
     test "can login with valid credentials", %{conn: conn} do
-      {:ok, account} = TestUtils.random_account()
-      {:ok, user, plain_password} = TestUtils.random_user(account)
+      account = insert(:account)
+      {user, plain_password} = user_with_password(%{account: account})
 
       valid_attrs = %{"email" => user.email, "password" => plain_password}
 
       conn = conn |> post("/auth/login", valid_attrs)
-
       response = conn |> json_response(200)
 
       assert response |> Map.has_key?("data")
@@ -25,8 +24,8 @@ defmodule ShopWeb.AccountControllerTest do
     end
 
     test "cannot login with invalid credentials", %{conn: conn} do
-      {:ok, account} = TestUtils.random_account()
-      {:ok, user, _} = TestUtils.random_user(account)
+      account = insert(:account)
+      user = insert(:user, account: account)
 
       invalid_attrs = %{"email" => user.email, "password" => "wrong_password"}
 
@@ -44,15 +43,7 @@ defmodule ShopWeb.AccountControllerTest do
 
   describe "creating an account" do
     test "can create an account with valid credentials", %{conn: conn} do
-      valid_attrs = %{
-        "name" => Person.name(),
-        "email" => Internet.email(),
-        "password" => String.base64(),
-        "first_name" => Person.first_name(),
-        "last_name" => Person.last_name(),
-        "type" => "buyer",
-        "phone" => Phone.EnUs.phone()
-      }
+      valid_attrs = params_for(:account_registration)
 
       conn = conn |> post("/auth/register", valid_attrs)
       response = conn |> json_response(200)
@@ -77,15 +68,9 @@ defmodule ShopWeb.AccountControllerTest do
     end
 
     test "identifies and throws error when a param is not provided", %{conn: conn} do
-      invalid_attrs = %{
-        "name" => Person.name(),
-        "email" => Internet.email(),
-        "password" => String.base64(),
-        "first_name" => nil,
-        "last_name" => nil,
-        "type" => "buyer",
-        "phone" => Phone.EnUs.phone()
-      }
+      invalid_attrs =
+        params_for(:account_registration)
+        |> Map.merge(%{"first_name" => nil, "last_name" => nil})
 
       conn = conn |> post("/auth/register", invalid_attrs)
 

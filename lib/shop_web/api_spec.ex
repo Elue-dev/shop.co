@@ -8,7 +8,7 @@ defmodule ShopWeb.ApiSpec do
     %OpenApi{
       servers: [
         %Server{url: "http://localhost:4000", description: "Development server"}
-        # %Server{url: "https://yourapp.com", description: "Production server"}
+        # %Server{url: "https://deployed.com", description: "Production server"}
       ],
       info: %Info{
         title: "Shop.co API",

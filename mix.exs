@@ -52,6 +52,7 @@ defmodule Shop.MixProject do
       {:oban, "~> 2.17"},
       {:dotenv, "~> 3.0.0", only: [:dev, :test]},
       {:faker, "~> 0.18.0", only: :test},
+      {:ex_machina, "~> 2.8.0", only: :test},
       {:bandit, "~> 1.5"}
     ]
   end
